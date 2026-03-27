@@ -23,6 +23,7 @@ def render_home():
         if cols[i].button(mineral):
             st.session_state.selected_mineral = mineral
             st.session_state.page = "physical"
+            st.rerun()
 
 
 def render_physical(mineral_name: str):

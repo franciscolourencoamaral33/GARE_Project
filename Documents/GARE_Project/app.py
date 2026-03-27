@@ -9,36 +9,24 @@ from ui.pages import render_home, render_physical, render_geological, render_map
 # -----------------------------------------------------------------------------
 
 def _inject_styles():
-    st.markdown(
-        """
+    st.markdown("""
         <style>
-        .reportview-container {
-            background: #FFFFFF;
-        }
-        .stSidebar {
-            background: #F7F9FB;
-        }
-        .stButton>button {
-            background-color: #87CEEB;
-            color: #000000;
-            border: 1px solid rgba(0,0,0,0.12);
-        }
-        .stButton>button:hover {
-            background-color: #6ec6e0;
-        }
-        .stTextInput>div>div>input {
-            border: 1px solid rgba(0,0,0,0.2);
-        }
-        .stMarkdown h1 {
-            font-family: Montserrat, system-ui, sans-serif;
-        }
-        .stMarkdown h2 {
-            font-family: Montserrat, system-ui, sans-serif;
-        }
+            /* Melhora a legibilidade do menu lateral */
+            .stSidebar {
+                background-color: #f8f9fa;
+            }
+            .stSidebar [data-testid="stMarkdownContainer"] p {
+                color: #1a1a1a !important;
+                font-weight: 500;
+            }
+            /* Estilo dos botões de seleção */
+            div.stButton > button:first-child {
+                background-color: #007bff;
+                color: white;
+                border-radius: 5px;
+            }
         </style>
-        """,
-        unsafe_allow_html=True,
-    )
+    """, unsafe_allow_html=True)
 
 
 # -----------------------------------------------------------------------------
