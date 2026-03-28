@@ -1,103 +1,75 @@
 import streamlit as st
-from core.data import mineral_exists
-from ui.pages import render_home, render_physical, render_geological, render_map
+from core.data import get_mineral, get_mineral_names, load_data, mineral_exists, get_top_occurrences
+from ui.pages import render_home, render_physical, render_geological, render_map, render_quiz
 
-# -----------------------------------------------------------------------------
-# Styling helpers
-# -----------------------------------------------------------------------------
-def _inject_styles():
-    st.markdown("""
-        <style>
-            .stSidebar { background-color: #f8f9fa; }
-            .stSidebar [data-testid="stMarkdownContainer"] p {
-                color: #1a1a1a !important;
-                font-weight: 500;
-            }
-            div.stButton > button:first-child {
-                background-color: #007bff;
-                color: white;
-                border-radius: 5px;
-            }
-        </style>
-    """, unsafe_allow_html=True)
-
-# -----------------------------------------------------------------------------
-# Session state helpers
-# -----------------------------------------------------------------------------
-def _init_session_state():
-    if "page" not in st.session_state:
-        st.session_state.page = "home"
-    if "selected_mineral" not in st.session_state:
-        st.session_state.selected_mineral = None
-    if "search_query" not in st.session_state:
-        st.session_state.search_query = ""
-
-def _set_selected_mineral(mineral_name: str):
-    st.session_state.selected_mineral = mineral_name
-    st.session_state.page = "physical"
-
-def _search_and_select():
-    query = st.session_state.search_query.strip()
-    if not query:
-        return
-    if not mineral_exists(query):
-        st.sidebar.error("Mineral not found.")
-        return
-    _set_selected_mineral(query)
-
-# -----------------------------------------------------------------------------
-# Main
-# -----------------------------------------------------------------------------
 def main():
-    st.set_page_config(page_title="Material ID", layout="wide")
-    _init_session_state()
-    _inject_styles()
+    # Configuração da Página
+    st.set_page_config(page_title="Material ID - Geology Explorer", layout="wide")
 
-    st.sidebar.title("Mineral Search")
+    # Inicialização do estado da sessão para o mineral selecionado
+    if 'selected_mineral' not in st.session_state:
+        st.session_state['selected_mineral'] = None
 
-    st.sidebar.text_input(
-        "Search mineral",
-        key="search_query",
-        placeholder="e.g. Quartz",
-        on_change=_search_and_select,
-    )
-
-    st.sidebar.markdown("---")
-
-    # SOLUÇÃO PARA O ERRO: Usar uma chave diferente para o widget
-    pages = ["home", "physical", "geological", "map", "quiz"]
+    # --- SIDEBAR / NAVEGAÇÃO ---
+    st.sidebar.title("Navigation")
     
-    # Se o utilizador mudar o rádio, atualizamos o state da página
-    def sync_page():
-        st.session_state.page = st.session_state.nav_radio
-
-    st.sidebar.radio(
-        "Navigation",
-        options=pages,
-        index=pages.index(st.session_state.page),
-        key="nav_radio",
-        on_change=sync_page
+    # Seletor de busca manual na sidebar
+    search_query = st.sidebar.text_input("Search mineral", placeholder="e.g. Uranium")
+    
+    if search_query:
+        if mineral_exists(search_query.capitalize()):
+            st.session_state['selected_mineral'] = search_query.capitalize()
+    
+    # Menu de rádio para as páginas
+    menu = st.sidebar.radio(
+        "Go to",
+        ["home", "physical", "geological", "map", "quiz"]
     )
 
     if st.sidebar.button("Clear selection"):
-        st.session_state.selected_mineral = None
-        st.session_state.page = "home"
+        st.session_state['selected_mineral'] = None
         st.rerun()
 
-    # Renderização baseada no state
-    current_page = st.session_state.page
-    mineral = st.session_state.selected_mineral or ""
+    # --- LÓGICA DE RENDERIZAÇÃO ---
+    
+    # 1. Carregamos o nome do mineral selecionado
+    mineral_name = st.session_state['selected_mineral']
+    
+    # 2. Buscamos os dados completos desse mineral (se existir)
+    mineral_data = None
+    if mineral_name:
+        mineral_data = get_mineral(mineral_name)
 
-    if current_page == "home":
+    # 3. Encaminhamento para as páginas
+    if menu == "home":
         render_home()
-    elif current_page == "physical":
-        render_physical(mineral)
-    elif current_page == "geological":
-        render_geological(mineral)
-    elif current_page == "map":
-        render_map(mineral)
-    elif current_page == "quiz":
-        render_quiz(mineral)
+
+    elif menu == "physical":
+        if mineral_data:
+            render_physical(mineral_data)
+        else:
+            st.warning("⚠️ Seleciona um mineral na Home primeiro!")
+
+    elif menu == "geological":
+        if mineral_data:
+            render_geological(mineral_data)
+        else:
+            st.warning("⚠️ Seleciona um mineral na Home primeiro!")
+
+    elif menu == "map":
+        if mineral_name:
+            # Pegamos as ocorrências para o mapa
+            occurrences = get_top_occurrences(mineral_name)
+            render_map(mineral_name, occurrences)
+        else:
+            st.warning("⚠️ Seleciona um mineral na Home primeiro!")
+
+    elif menu == "quiz":
+        if mineral_data:
+            # CHAMADA CORRIGIDA: Agora passamos os dados que carregámos acima
+            render_quiz(mineral_data)
+        else:
+            st.info("ℹ️ Para começar o Quiz, seleciona um recurso geológico na página Home.")
 
 if __name__ == "__main__":
     main()
