@@ -4,32 +4,56 @@ import os
 
 @st.cache_data
 def load_data():
-    # Caminho dinâmico para evitar erros de localização
+    # Caminho dinâmico para localizar o CSV na pasta acima de 'core'
     base_path = os.path.dirname(__file__)
     csv_path = os.path.join(base_path, "..", "geology_dataset_standard.csv")
     
-    df = pd.read_csv(csv_path)
-    # Limpa espaços em branco nos nomes das colunas
-    df.columns = df.columns.str.strip()
-    return df
+    try:
+        # sep=None com engine='python' deteta automaticamente se o separador é , ou ;
+        # on_bad_lines='skip' ignora linhas com erros de formatação
+        df = pd.read_csv(
+            csv_path, 
+            sep=None, 
+            engine='python', 
+            on_bad_lines='skip', 
+            encoding='utf-8'
+        )
+        
+        # Remove espaços em branco extras nos nomes das colunas
+        df.columns = df.columns.str.strip()
+        return df
+    except Exception as e:
+        st.error(f"Erro ao carregar o ficheiro CSV: {e}")
+        return pd.DataFrame()
 
 def get_mineral_names():
     df = load_data()
+    if df.empty:
+        return []
     # Retorna a lista de minerais únicos da coluna 'Resource'
-    return sorted(df['Resource'].dropna().unique().tolist())
+    # Se a tua coluna tiver outro nome (ex: 'Mineral'), muda aqui
+    column_name = 'Resource' 
+    if column_name in df.columns:
+        return sorted(df[column_name].dropna().unique().tolist())
+    else:
+        st.warning(f"Coluna '{column_name}' não encontrada no CSV.")
+        return []
 
 def get_mineral(mineral_resource):
     df = load_data()
-    # Filtra pelo nome do recurso (ex: 'Sulfates')
+    if df.empty:
+        return None
+    # Filtra pelo nome do recurso
     result = df[df['Resource'] == mineral_resource]
     if not result.empty:
-        # Retornamos a primeira linha encontrada como dicionário
         return result.iloc[0].to_dict()
     return None
 
 def get_top_occurrences(mineral_resource, limit=10):
     df = load_data()
-    # Filtra todas as linhas para este mineral para mostrar no mapa
+    if df.empty:
+        return []
+    # Filtra ocorrências para o mapa
     occurrences = df[df['Resource'] == mineral_resource]
     return occurrences.head(limit).to_dict('records')
 
