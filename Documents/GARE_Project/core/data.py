@@ -30,13 +30,20 @@ def get_mineral_names():
     df = load_data()
     if df.empty:
         return []
-    # Retorna a lista de minerais únicos da coluna 'Resource'
-    # Se a tua coluna tiver outro nome (ex: 'Mineral'), muda aqui
+    
+    # Vamos garantir que o Pandas olha para a coluna certa, 
+    # ignorando espaços extras que o Excel às vezes mete.
     column_name = 'Resource' 
+    
     if column_name in df.columns:
-        return sorted(df[column_name].dropna().unique().tolist())
+        # Pega em todos os valores, remove espaços e valores vazios
+        names = df[column_name].dropna().unique().tolist()
+        # Limpa espaços em branco de cada nome (ex: "Quartz " vira "Quartz")
+        names = [str(n).strip() for n in names]
+        # Remove duplicados que possam ter surgido da limpeza e ordena
+        return sorted(list(set(names)))
     else:
-        st.warning(f"Coluna '{column_name}' não encontrada no CSV.")
+        st.warning(f"Colunas encontradas: {list(df.columns)}")
         return []
 
 def get_mineral(mineral_resource):
