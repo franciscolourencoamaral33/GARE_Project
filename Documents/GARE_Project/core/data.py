@@ -9,7 +9,14 @@ def load_data():
     
     try:
         # Tentativa 1: Leitura flexível com deteção automática
-        df = pd.read_csv(csv_path, sep=None, engine='python', encoding='utf-8-sig')
+        df = pd.read_csv(
+            csv_path, 
+            sep=None, 
+            engine='python', 
+            encoding='utf-8-sig',
+            on_bad_lines='skip',
+            quoting=3 # Isto faz com que ele ignore aspas problemáticas que baralham as colunas
+        )
         
         # Se o dataframe vier quase vazio, tentamos com ponto e vírgula (comum no Excel PT)
         if df.shape[1] <= 1:
