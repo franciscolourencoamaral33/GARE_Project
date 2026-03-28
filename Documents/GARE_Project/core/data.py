@@ -2,49 +2,46 @@ import pandas as pd
 import streamlit as st
 import os
 
+
 @st.cache_data
 def load_data():
-    # Caminho dinâmico para localizar o CSV na pasta acima de 'core'
     base_path = os.path.dirname(__file__)
     csv_path = os.path.join(base_path, "..", "geology_dataset_standard.csv")
     
     try:
-        # sep=None com engine='python' deteta automaticamente se o separador é , ou ;
-        # on_bad_lines='skip' ignora linhas com erros de formatação
+        # Forçamos a leitura e removemos linhas totalmente vazias
         df = pd.read_csv(
             csv_path, 
             sep=None, 
             engine='python', 
-            on_bad_lines='skip', 
-            encoding='utf-8'
+            encoding='utf-8-sig', # O 'sig' ajuda com ficheiros do Excel/Numbers
+            on_bad_lines='skip'
         )
         
-        # Remove espaços em branco extras nos nomes das colunas
+        # REMOVE LINHAS DUPLICADAS E ESPAÇOS EM BRANCO NAS COLUNAS
         df.columns = df.columns.str.strip()
+        
+        # Limpa espaços em branco dentro de todas as células de texto do CSV
+        df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+        
         return df
     except Exception as e:
-        st.error(f"Erro ao carregar o ficheiro CSV: {e}")
+        st.error(f"Erro crítico no CSV: {e}")
         return pd.DataFrame()
-
+    
 def get_mineral_names():
     df = load_data()
     if df.empty:
         return []
     
-    # Vamos garantir que o Pandas olha para a coluna certa, 
-    # ignorando espaços extras que o Excel às vezes mete.
-    column_name = 'Resource' 
-    
-    if column_name in df.columns:
-        # Pega em todos os valores, remove espaços e valores vazios
-        names = df[column_name].dropna().unique().tolist()
-        # Limpa espaços em branco de cada nome (ex: "Quartz " vira "Quartz")
-        names = [str(n).strip() for n in names]
-        # Remove duplicados que possam ter surgido da limpeza e ordena
-        return sorted(list(set(names)))
-    else:
-        st.warning(f"Colunas encontradas: {list(df.columns)}")
-        return []
+    # Vamos garantir que ele lê a coluna 'Resource'
+    if 'Resource' in df.columns:
+        # Pega em tudo o que não é vazio e remove duplicados
+        lista = df['Resource'].unique().tolist()
+        # Filtra para não aparecerem valores como 'nan' ou vazios
+        lista = [x for x in lista if str(x).lower() != 'nan' and str(x).strip() != ""]
+        return sorted(lista)
+    return []
 
 def get_mineral(mineral_resource):
     df = load_data()
