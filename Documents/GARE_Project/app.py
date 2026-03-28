@@ -1,6 +1,6 @@
 import streamlit as st
 from core.data import mineral_exists
-from ui.pages import render_home, render_physical, render_geological, render_map, render_quiz
+from ui.pages import render_home, render_physical, render_geological, render_map
 
 # -----------------------------------------------------------------------------
 # Styling helpers
