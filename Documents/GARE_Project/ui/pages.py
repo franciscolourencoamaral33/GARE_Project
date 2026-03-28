@@ -66,3 +66,17 @@ def render_map(mineral_name: str):
     st_folium(map_obj, height=500, width=800)
     
     st.write(f"Encontradas {len(occurrences)} ocorrências no dataset.")
+
+def render_quiz(mineral_name: str):
+    st.title(f"Quiz Geológico: {mineral_name if mineral_name else 'Geral'}")
+    st.write("Testa os teus conhecimentos sobre este recurso!")
+    
+    # Exemplo de uma pergunta simples
+    pergunta = f"O recurso {mineral_name} é considerado um recurso renovável?"
+    opcao = st.radio(pergunta, ["Sim", "Não", "Depende da exploração"])
+    
+    if st.button("Submeter Resposta"):
+        if opcao == "Não":
+            st.success("Correto! Recursos minerais e fósseis são não-renováveis à escala humana.")
+        else:
+            st.error("Incorreto. Tenta rever a seção de Contexto Geológico.")    
