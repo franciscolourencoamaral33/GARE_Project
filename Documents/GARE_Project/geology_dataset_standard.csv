@@ -18,19 +18,19 @@ Mineral,Uranium,Sillamae Depository,Estonia,59.40,27.77,Tailings basin,Waste,Unc
 Mineral,Thorium,Graptolite belt,Estonia,,,Craton basin,Shale,Sedimentary,1-17 ppm,0.254 Mt,,,,,Low grade,
 Mineral,Thorium,Kavala Beach,Greece,40.85,24.30,Coastal placer,Placer sediment,Sedimentary,,,Surface,,,,Heavy minerals,
 Mineral,Thorium,Kvanefjeld,Greenland,60.97,-46.00,Alkaline complex,Syenite,Magmatic,,15.87 Mt,,,,,REE linked,
-Energy,Hydrogen,Albania ophiolites,Albania,,,Ophiolite belt,Fractured reservoir,Structural,,,,,,,Prospective,Surface degassing,
-Energy,Hydrogen,Ronda Massif,Spain,,,Alpine massif,Fractured reservoir,Structural,,,,,,,Concept,Abiotic source,
-Energy,Hydrogen,Troodos,Cyprus,,,Troodos massif,Fractured reservoir,Structural,,,,,,,Prospective,Late Cretaceous,
-Energy,Hydrogen,Vourinos,Greece,,,Hellenides,Fractured reservoir,Structural,,,,,,,Prospective,Hyperalkaline springs,
-Energy,Hydrogen,Leka ophiolite,Norway,,,Caledonian belt,Fractured reservoir,Structural,,,,,,,Prospective,NW Europe target,
-Energy,Hydrogen,Larderello,Italy,43.081,11.802,Geothermal field,Mixed reservoir,Structural,,,,,,,Emitting,1.7-4.3% H2,
-Energy,Hydrogen,Milos Island,Greece,,,Volcanic field,Mixed reservoir,Structural,,,,,,,Emitting,3% H2,
-Energy,Hydrogen,Chimaera seep,Turkey,36.431,30.456,Ophiolitic belt,Fractured reservoir,Structural,,,,,,,Emitting,Advective seep,
-Energy,Petroleum,Leman Gasfield,United Kingdom,,,North Sea,Porous reservoir,Stratigraphic,,,,,,,Producing,Conventional gas,
-Energy,Petroleum,Stavropol,Russia,,,Foreland basin,Porous reservoir,Stratigraphic,,,,,,,Producing,Elevated hydrogen,
-Energy,Methane Hydrate,W Svalbard margin,Norway,,,Continental slope,Porous reservoir,Stratigraphic,,,10s mbsf,,,,Prospective,BSR indicators,
-Energy,Methane Hydrate,Mid-Norway margin,Norway,,,Norwegian Sea,Porous reservoir,Stratigraphic,,625 GSm3,10s mbsf,,,,Prospective,BSR area,
-Energy,Methane Hydrate,Gulf of Cadiz,Spain/Portugal,,,Atlantic margin,Mixed reservoir,Stratigraphic,Low,,10s mbsf,,,,Prospective,5-31% saturation,
-Energy,Methane Hydrate,Levant Basin,Eastern Mediterranean,,,Mediterranean basin,Porous reservoir,Stratigraphic,,~100 Tcf,>1000 m,,,,Prospective,Deep occurrence,
-Energy,Methane Hydrate,Black Sea,Black Sea region,,,Black Sea basin,Mixed reservoir,Stratigraphic,,Basin-wide,10s mbsf,,,,Prospective,99% CH4,
-Energy,Methane Hydrate,Danube Fan,Romania/Bulgaria,,,Black Sea basin,Mixed reservoir,Stratigraphic,,,>650 m,,,,Prospective,System disequilibrium,
+Energy,Hydrogen,Albania ophiolites,Albania,,,Ophiolite belt,Fractured reservoir,Structural,,,,,,,Prospective,Surface degassing
+Energy,Hydrogen,Ronda Massif,Spain,,,Alpine massif,Fractured reservoir,Structural,,,,,,,Concept,Abiotic source
+Energy,Hydrogen,Troodos,Cyprus,,,Troodos massif,Fractured reservoir,Structural,,,,,,,Prospective,Late Cretaceous
+Energy,Hydrogen,Vourinos,Greece,,,Hellenides,Fractured reservoir,Structural,,,,,,,Prospective,Hyperalkaline springs
+Energy,Hydrogen,Leka ophiolite,Norway,,,Caledonian belt,Fractured reservoir,Structural,,,,,,,Prospective,NW Europe target
+Energy,Hydrogen,Larderello,Italy,43.081,11.802,Geothermal field,Mixed reservoir,Structural,,,,,,,Emitting,1.7-4.3% H2
+Energy,Hydrogen,Milos Island,Greece,,,Volcanic field,Mixed reservoir,Structural,,,,,,,Emitting,3% H2
+Energy,Hydrogen,Chimaera seep,Turkey,36.431,30.456,Ophiolitic belt,Fractured reservoir,Structural,,,,,,,Emitting,Advective seep
+Energy,Petroleum,Leman Gasfield,United Kingdom,,,North Sea,Porous reservoir,Stratigraphic,,,,,,,Producing,Conventional gas
+Energy,Petroleum,Stavropol,Russia,,,Foreland basin,Porous reservoir,Stratigraphic,,,,,,,Producing,Elevated hydrogen
+Energy,Methane Hydrate,W Svalbard margin,Norway,,,Continental slope,Porous reservoir,Stratigraphic,,,10s mbsf,,,,Prospective,BSR indicators
+Energy,Methane Hydrate,Mid-Norway margin,Norway,,,Norwegian Sea,Porous reservoir,Stratigraphic,,625 GSm3,10s mbsf,,,,Prospective,BSR area
+Energy,Methane Hydrate,Gulf of Cadiz,Spain/Portugal,,,Atlantic margin,Mixed reservoir,Stratigraphic,Low,,10s mbsf,,,,Prospective,5-31% saturation
+Energy,Methane Hydrate,Levant Basin,Eastern Mediterranean,,,Mediterranean basin,Porous reservoir,Stratigraphic,,~100 Tcf,>1000 m,,,,Prospective,Deep occurrence
+Energy,Methane Hydrate,Black Sea,Black Sea region,,,Black Sea basin,Mixed reservoir,Stratigraphic,,Basin-wide,10s mbsf,,,,Prospective,99% CH4
+Energy,Methane Hydrate,Danube Fan,Romania/Bulgaria,,,Black Sea basin,Mixed reservoir,Stratigraphic,,,>650 m,,,,Prospective,System disequilibrium
