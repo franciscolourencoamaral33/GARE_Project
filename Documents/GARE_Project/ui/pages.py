@@ -45,44 +45,41 @@ def render_home():
                 st.rerun()
                 
 def render_physical(data):
-   st.title(f"Physical Properties of {data['Resource']}")
+    # 1. Vai buscar o nome usando a coluna exata que tens: 'resource'
+    # Usamos .get() para que não dê erro se a coluna estiver vazia
+    recurso_nome = data.get('resource', 'Unknown Resource')
     
-    # === TRUQUE DA IMAGEM ===
-    # Prepara o nome do ficheiro para bater certo com a pasta (tudo minusculo, sem espaços)
-    mineral_filename = data['Resource'].lower().replace(" ", "").replace("(", "").replace(")", "").replace("-", "")
+    st.title(f"Details for {recurso_nome}")
+    
+    # 2. Truque da imagem (tira espaços e parênteses)
+    mineral_filename = recurso_nome.lower().replace(" ", "").replace("(", "").replace(")", "").replace("-", "")
     
     col_img, col_data = st.columns([1, 2])
 
     with col_img:
         image_path = f"images/{mineral_filename}.jpg"
         try:
-            st.image(image_path, caption=data['Resource'], use_container_width=True)
+            st.image(image_path, caption=recurso_nome, use_container_width=True)
         except:
             # Tenta carregar .jpeg caso a extensão seja essa
             try:
-                st.image(f"images/{mineral_filename}.jpeg", caption=data['Resource'], use_container_width=True)
+                st.image(f"images/{mineral_filename}.jpeg", caption=recurso_nome, use_container_width=True)
             except:
-                st.warning(f"📷 Imagem não encontrada: espera-se o ficheiro '{mineral_filename}.jpg' na pasta 'images/'.")
+                st.warning(f"📷 Imagem não encontrada. Esperava-se '{mineral_filename}.jpg' na pasta 'images/'.")
 
     with col_data:
-        color_data = "Desconhecida"
-        if 'Color' in data and data['Color'] is not None:
-             if isinstance(data['Color'], float) and math.isnan(data['Color']):
-                 color_data = "Desconhecida"
-             else:
-                 color_data = data['Color']
-
-        st.markdown(f"**Description:** {data['Description']}")
+        # 3. Mostrar os dados que REALMENTE existem no teu ficheiro CSV
+        st.markdown(f"**Specific Deposit/Name:** {data.get('name', 'N/A')}")
         st.write("---")
         
         st.write(f"""
-        | Property | Value |
+        | Characteristic | Information |
         | :--- | :--- |
-        | **Chemical Formula** | `{data['Chemical Formula']}` |
-        | **Color** | {color_data} |
-        | **Hardness** | {data['Hardness']} |
-        | **Crystal System** | {data['Crystal System']} |
-        | **Specific Gravity** | {data['Specific Gravity']} |
+        | **Country** | {data.get('country', 'N/A')} |
+        | **Geological Setting** | {data.get('geological setting', 'N/A')} |
+        | **Host Rock** | {data.get('host rock', 'N/A')} |
+        | **Deposit Type** | {data.get('deposit type', 'N/A')} |
+        | **Status** | {data.get('status', 'N/A')} |
         """)
 
 def render_geological(data):
