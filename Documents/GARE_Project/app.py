@@ -15,7 +15,7 @@ def main():
     # 2. SIDEBAR
     st.sidebar.title("Navigation")
     
-    search_query = st.sidebar.text_input("Search mineral", placeholder="e.g. Orthoclase")
+    search_query = st.sidebar.text_input("🔍 Search mineral", placeholder="e.g. Orthoclase")
     if search_query:
         # Se a pessoa pesquisar, guarda e vai para as propriedades
         st.session_state['selected_mineral'] = search_query.capitalize()
