@@ -3,7 +3,6 @@ from folium.plugins import MarkerCluster
 import pandas as pd
 import html
 import math
-from branca.element import Template, MacroElement
 
 # 1. As cores do teu colega
 PALETTE = [
@@ -11,7 +10,7 @@ PALETTE = [
     "#9467bd", "#8c564b", "#17becf",
 ]
 
-# 2. Todos os fatores/detalhes que vão aparecer ao clicar (restaurados!)
+# 2. Todos os fatores/detalhes que vão aparecer ao clicar
 POPUP_FIELDS = [
     "Dataset", "Resource", "Name", "Country", "Geological Setting",
     "Host Rock / Reservoir", "Deposit Type / Trap Type",
@@ -39,6 +38,28 @@ def build_popup(row):
         "<table style='border-collapse:collapse'>"
         + "".join(lines)
         + "</table></div>"
+    )
+
+def build_legend(categories, color_map):
+    """Constrói a legenda flutuante no canto inferior do mapa."""
+    items = []
+    for cat in categories:
+        color = color_map[cat]
+        items.append(
+            "<div style='display:flex; align-items:center; margin-bottom:4px;'>"
+            f"<span style='display:inline-block; width:12px; height:12px; background:{color}; border-radius:50%; margin-right:8px;'></span>"
+            f"<span>{html.escape(cat)}</span>"
+            "</div>"
+        )
+
+    return (
+        "<div style='position: fixed; bottom: 20px; left: 20px; z-index: 9999; "
+        "background: white; padding: 12px 14px; border: 2px solid grey; "
+        "border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); "
+        "font-family: Arial, sans-serif; font-size: 13px; max-height: 250px; overflow-y: auto;'>"
+        "<div style='font-weight:700; margin-bottom:8px;'>Legenda</div>"
+        + "".join(items)
+        + "</div>"
     )
 
 def build_folium_map(occurrences):
@@ -117,32 +138,10 @@ def build_folium_map(occurrences):
             popup=folium.Popup(build_popup(row), max_width=420),
         ).add_to(clusters[cat])
 
-    # Construir a legenda à prova de Streamlit usando MacroElement
+    # Injetar a legenda de forma segura para o Streamlit
     if categories:
-        legend_items = ""
-        for cat in categories:
-            color = color_map[cat]
-            legend_items += f"""
-            <div style='display:flex; align-items:center; margin-bottom:4px;'>
-                <span style='display:inline-block; width:12px; height:12px; background:{color}; border-radius:50%; margin-right:8px;'></span>
-                <span>{html.escape(cat)}</span>
-            </div>
-            """
-        
-        template = f"""
-        {{% macro html(this, kwargs) %}}
-        <div style='position: fixed; bottom: 20px; left: 20px; z-index: 9999; 
-                    background: white; padding: 12px 14px; border: 2px solid grey; 
-                    border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); 
-                    font-family: Arial, sans-serif; font-size: 13px; max-height: 200px; overflow-y: auto;'>
-            <div style='font-weight:700; margin-bottom:8px;'>Legenda</div>
-            {legend_items}
-        </div>
-        {{% endmacro %}}
-        """
-        macro = MacroElement()
-        macro._template = Template(template)
-        fmap.get_root().add_child(macro)
+        legend_html = build_legend(categories, color_map)
+        fmap.get_root().html.add_child(folium.Element(legend_html))
 
     folium.LayerControl(collapsed=False).add_to(fmap)
     
