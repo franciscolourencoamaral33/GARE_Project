@@ -1,57 +1,89 @@
 import streamlit as st
+import math
 from core.data import get_mineral, get_mineral_names, get_top_occurrences
 from services.map import build_folium_map
 from streamlit_folium import st_folium
 
 def render_home():
-    from core.data import get_mineral_names
-    import streamlit as st
+    # --- 1. O NOVO BANNER NA HOME ---
+    try:
+        st.image("images/home_banner.jpg", use_container_width=True)
+    except:
+        pass # Se não encontrar a imagem, não mostra erro, segue em frente
+        
+    st.markdown("<br>", unsafe_allow_html=True) # Espaçamento para respirar
 
+    # --- 2. TÍTULO E INTRODUÇÃO ---
     st.title("Material ID - Geology Explorer")
-    st.write("Select a mineral resource to explore its properties, geological setting, and location.")
+    st.markdown("""
+        Esta aplicação permite explorar e visualizar dados sobre os minerais vitais para a transição energética global.
+        
+        **Como usar:**
+        1. Usa os botões abaixo ou a barra lateral para escolher um recurso.
+        2. Navega pelas abas na barra lateral para ver Propriedades Físicas, Mapas e Geologia.
+        3. Testa os teus conhecimentos no Quiz!
+        
+        ---
+    """)
+    
+    st.subheader("Select a mineral resource to explore:")
 
-    # 1. Vai buscar os nomes reais do teu ficheiro CSV
+    # --- 3. A TUA LÓGICA ORIGINAL DE BOTÕES ---
     names = get_mineral_names()
 
     if not names:
         st.warning("No minerals found in the database. Check your CSV file.")
         return
 
-    # 2. Cria os botões dinamicamente
     cols = st.columns(3)
     for i, name in enumerate(names):
         with cols[i % 3]:
             # Se o botão for clicado:
             if st.button(name, key=f"btn_{name}", use_container_width=True):
                 st.session_state['selected_mineral'] = name
-                st.session_state['menu_option'] = "physical" # Faz o salto de página
+                st.session_state['menu_option'] = "physical"
                 st.rerun()
                 
 def render_physical(data):
-    import streamlit as st
-    st.title("Physical & General Properties")
+    st.title(f"Physical Properties of {data['Mineral Name']}")
     
-    if not data:
-        st.warning("No data available for this mineral.")
-        return
+    # === TRUQUE DA IMAGEM ===
+    # Prepara o nome do ficheiro para bater certo com a pasta (tudo minusculo, sem espaços)
+    mineral_filename = data['Mineral Name'].lower().replace(" ", "").replace("(", "").replace(")", "").replace("-", "")
+    
+    col_img, col_data = st.columns([1, 2])
 
-    # Usamos data.get('NomeDaColuna', 'Texto alternativo se não existir')
-    st.subheader(f"Resource: {data.get('Resource', 'Unknown')}")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.write(f"**Specific Name/Location:** {data.get('Name', 'N/A')}")
-        st.write(f"**Country:** {data.get('Country', 'N/A')}")
-        st.write(f"**Status:** {data.get('Status', 'N/A')}")
-    
-    with col2:
-        st.write(f"**Grade / Concentration:** {data.get('Grade / Concentration', 'N/A')}")
-        st.write(f"**Size / Reserves:** {data.get('Size / Reserves', 'N/A')}")
+    with col_img:
+        image_path = f"images/{mineral_filename}.jpg"
+        try:
+            st.image(image_path, caption=data['Mineral Name'], use_container_width=True)
+        except:
+            # Tenta carregar .jpeg caso a extensão seja essa
+            try:
+                st.image(f"images/{mineral_filename}.jpeg", caption=data['Mineral Name'], use_container_width=True)
+            except:
+                st.warning(f"📷 Imagem não encontrada: espera-se o ficheiro '{mineral_filename}.jpg' na pasta 'images/'.")
+
+    with col_data:
+        color_data = "Desconhecida"
+        if 'Color' in data and data['Color'] is not None:
+             if isinstance(data['Color'], float) and math.isnan(data['Color']):
+                 color_data = "Desconhecida"
+             else:
+                 color_data = data['Color']
+
+        st.markdown(f"**Description:** {data['Description']}")
+        st.write("---")
         
-    st.write("---")
-    st.write(f"**Notes:** {data.get('Notes', 'N/A')}")
-    st.write(f"**Source:** {data.get('Source', 'N/A')}")
-
+        st.write(f"""
+        | Property | Value |
+        | :--- | :--- |
+        | **Chemical Formula** | `{data['Chemical Formula']}` |
+        | **Color** | {color_data} |
+        | **Hardness** | {data['Hardness']} |
+        | **Crystal System** | {data['Crystal System']} |
+        | **Specific Gravity** | {data['Specific Gravity']} |
+        """)
 
 def render_geological(data):
     import streamlit as st
