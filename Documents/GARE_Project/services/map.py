@@ -1,39 +1,67 @@
 import folium
+from folium.plugins import MarkerCluster
+import pandas as pd
 
+def build_folium_map(occurrences):
+    # 1. Adaptar os dados (funciona quer venha do Pandas DataFrame ou lista)
+    if isinstance(occurrences, pd.DataFrame):
+        data_points = occurrences.to_dict('records')
+    else:
+        data_points = occurrences
 
-def build_folium_map(occurrences: list, start_zoom=4, start_location=(54.0, 10.0)) -> folium.Map:
-    """Build and return a folium Map with markers for each occurrence."""
-
-    # Compute centroid based on occurrences if available
-    if occurrences:
-        avg_lat = sum(o.get("lat", 0) for o in occurrences) / len(occurrences)
-        avg_lon = sum(o.get("lon", 0) for o in occurrences) / len(occurrences)
-        start_location = (avg_lat, avg_lon)
-
-    m = folium.Map(location=start_location, zoom_start=start_zoom, tiles="OpenStreetMap")
-
-    for occ in occurrences:
-        lat = occ.get("lat")
-        lon = occ.get("lon")
-        if lat is None or lon is None:
+    # 2. Filtrar apenas as linhas que tenham Latitude e Longitude válidas
+    valid_points = []
+    for point in data_points:
+        try:
+            lat = float(point.get("Latitude", ""))
+            lon = float(point.get("Longitude", ""))
+            valid_points.append({"lat": lat, "lon": lon, "data": point})
+        except (ValueError, TypeError):
             continue
 
-        score = occ.get("score", 0)
-        color = "green" if score >= 80 else "orange" if score >= 60 else "red"
+    # 3. Se não houver dados válidos, mostra um mapa vazio centrado na Europa
+    if not valid_points:
+        return folium.Map(location=[39.5, 15.0], zoom_start=4, tiles="CartoDB positron")
 
-        popup_html = f"<b>{occ.get('country', 'Unknown')}</b><br/>" \
-            f"{occ.get('region', 'Unknown')}<br/>" \
-            f"Type: {occ.get('type', 'Unknown')}<br/>" \
-            f"Score: {score}/100"
+    # 4. Calcular o centro do mapa com base na média dos pontos
+    avg_lat = sum(p["lat"] for p in valid_points) / len(valid_points)
+    avg_lon = sum(p["lon"] for p in valid_points) / len(valid_points)
+
+    fmap = folium.Map(
+        location=[avg_lat, avg_lon],
+        zoom_start=4,
+        tiles="CartoDB positron"
+    )
+
+    # 5. Cluster de marcadores inspirado no código do teu colega
+    cluster = MarkerCluster(name="Ocorrências").add_to(fmap)
+
+    # 6. Desenhar cada ponto válido
+    for p in valid_points:
+        row = p["data"]
+        name = str(row.get("Name", "Desconhecido")).strip()
+        country = str(row.get("Country", "Desconhecido")).strip()
+        resource = str(row.get("Resource", "Sem recurso")).strip()
+        
+        # Um popup limpo para não sobrecarregar o mapa
+        popup_html = f"""
+        <div style='min-width:200px; font-family: sans-serif;'>
+            <b>Resource:</b> {resource}<br>
+            <b>Name:</b> {name}<br>
+            <b>Country:</b> {country}
+        </div>
+        """
 
         folium.CircleMarker(
-            location=(lat, lon),
-            radius=8,
-            color="#333",
+            location=[p["lat"], p["lon"]],
+            radius=6,
+            color="#1f77b4", # Azul da paleta do teu colega
+            weight=1,
             fill=True,
-            fill_color=color,
-            fill_opacity=0.75,
-            popup=folium.Popup(popup_html, max_width=300)
-        ).add_to(m)
+            fill_color="#1f77b4",
+            fill_opacity=0.85,
+            tooltip=f"{name} | {country}",
+            popup=folium.Popup(popup_html, max_width=300),
+        ).add_to(cluster)
 
-    return m
+    return fmap
