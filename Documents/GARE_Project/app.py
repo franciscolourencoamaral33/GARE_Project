@@ -27,18 +27,19 @@ def main():
         st.rerun()
 
     # Mineral selecionado
-    mineral = st.session_state['selected_mineral']
+    mineral_name = st.session_state['selected_mineral']
 
     if menu == "home":
         render_home()
     elif menu == "physical":
-        render_physical(mineral)
+        data = get_mineral(mineral_name) if mineral_name else None
+        render_physical(data)
     elif menu == "geological":
-        render_geological(mineral)
+        data = get_mineral(mineral_name) if mineral_name else None
+        render_geological(data)
     elif menu == "map":
-        render_map(mineral)
+        occurrences = get_top_occurrences(mineral_name) if mineral_name else []
+        render_map(mineral_name, occurrences)
     elif menu == "quiz":
-        render_quiz(mineral)
-
-if __name__ == "__main__":
-    main()
+        data = get_mineral(mineral_name) if mineral_name else None
+        render_quiz(data) # Aqui usamos 'data' para evitar o NameError
