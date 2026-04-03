@@ -106,9 +106,9 @@ def render_quiz(data):
     st.title(f"🧠 Quiz de Conhecimentos: {mineral_name}")
     st.markdown(f"Teste o que aprendeu ao explorar os dados sobre **{mineral_name}**!")
 
-    # 2. Base de dados de perguntas (3 por mineral)
+   # 2. Base de dados de perguntas (3 por recurso)
     questions_db = {
-        "Lithium": [ # Substitui pela forma como está escrito no teu CSV (ex: "Lítio" se for em PT)
+        "Lithium": [
             {
                 "pergunta": "1. Qual é a principal aplicação deste recurso hoje em dia?",
                 "opcoes": ["Construção Civil", "Baterias de iões de lítio", "Joalharia", "Combustível para aviões"],
@@ -125,7 +125,7 @@ def render_quiz(data):
                 "resposta": "É o metal mais leve que existe"
             }
         ],
-        "Hydrogen": [ # Substitui pela forma como está escrito no teu CSV (ex: "Hidrogénio" se for em PT)
+        "Hydrogen": [
             {
                 "pergunta": "1. Como é frequentemente conhecido o hidrogénio gerado naturalmente na crosta terrestre?",
                 "opcoes": ["Hidrogénio Verde", "Hidrogénio Branco (Geológico)", "Hidrogénio Cinzento", "Hidrogénio Azul"],
@@ -141,9 +141,127 @@ def render_quiz(data):
                 "opcoes": ["Lagos subterrâneos de água doce", "Bolsas e armadilhas geológicas", "Minas de carvão abandonadas", "Magma vulcânico"],
                 "resposta": "Bolsas e armadilhas geológicas"
             }
+        ],
+        "Cobalt": [
+            {
+                "pergunta": "1. Qual é a principal função do Cobalto nas tecnologias modernas?",
+                "opcoes": ["Fazer vidro à prova de bala", "Estabilizar baterias recarregáveis", "Construir painéis solares", "Filtrar água potável"],
+                "resposta": "Estabilizar baterias recarregáveis"
+            },
+            {
+                "pergunta": "2. Qual é o país responsável pela maior parte da extração mundial de Cobalto?",
+                "opcoes": ["Austrália", "Canadá", "República Democrática do Congo", "Rússia"],
+                "resposta": "República Democrática do Congo"
+            },
+            {
+                "pergunta": "3. Na mineração, o Cobalto é maioritariamente extraído como um subproduto de quais minérios?",
+                "opcoes": ["Cobre e Níquel", "Ouro e Prata", "Ferro e Carvão", "Urânio e Chumbo"],
+                "resposta": "Cobre e Níquel"
+            }
+        ],
+        "Copper": [
+            {
+                "pergunta": "1. Qual é a principal propriedade física que torna o Cobre vital para a eletrificação?",
+                "opcoes": ["É transparente", "É um excelente condutor de eletricidade e calor", "É mais duro que o diamante", "É altamente radioativo"],
+                "resposta": "É um excelente condutor de eletricidade e calor"
+            },
+            {
+                "pergunta": "2. Que cor adquire o cobre quando fica exposto aos elementos e oxida ao longo do tempo?",
+                "opcoes": ["Preto", "Branco brilhante", "Verde (Verdete)", "Vermelho vivo"],
+                "resposta": "Verde (Verdete)"
+            },
+            {
+                "pergunta": "3. Qual é o tipo de depósito geológico que fornece a maior parte do cobre a nível mundial?",
+                "opcoes": ["Pórfiro cuprífero (Porphyry)", "Placers de rio", "Veios de quartzo puro", "Rochas calcárias"],
+                "resposta": "Pórfiro cuprífero (Porphyry)"
+            }
+        ],
+        "Iridium": [
+            {
+                "pergunta": "1. O Irídio é famoso na geologia por estar concentrado numa camada de argila associada a que evento histórico?",
+                "opcoes": ["A extinção dos dinossauros (limite K-Pg)", "A Idade do Gelo", "A formação do Oceano Atlântico", "A erupção do Monte Vesúvio"],
+                "resposta": "A extinção dos dinossauros (limite K-Pg)"
+            },
+            {
+                "pergunta": "2. O Irídio faz parte de que grupo restrito de metais na tabela periódica?",
+                "opcoes": ["Metais Alcalinos", "Grupo da Platina (PGE)", "Terras Raras", "Halogéneos"],
+                "resposta": "Grupo da Platina (PGE)"
+            },
+            {
+                "pergunta": "3. Qual é uma das suas características físicas mais notáveis?",
+                "opcoes": ["Flutua na água", "É extremamente tóxico", "É um dos metais mais densos e resistentes à corrosão do mundo", "Derrete com o calor das mãos"],
+                "resposta": "É um dos metais mais densos e resistentes à corrosão do mundo"
+            }
+        ],
+        "Nickel": [
+            {
+                "pergunta": "1. Qual tem sido, historicamente, a principal aplicação industrial do Níquel?",
+                "opcoes": ["Ligas de Aço Inoxidável", "Produção de explosivos", "Fertilizantes agrícolas", "Vidro colorido"],
+                "resposta": "Ligas de Aço Inoxidável"
+            },
+            {
+                "pergunta": "2. O Níquel é frequentemente encontrado em grande abundância em que tipo de objetos extraterrestres?",
+                "opcoes": ["Cometas de gelo", "Meteoritos metálicos (Ferro-Níquel)", "Poeira lunar", "Anéis de Saturno"],
+                "resposta": "Meteoritos metálicos (Ferro-Níquel)"
+            },
+            {
+                "pergunta": "3. Porque é que a procura de Níquel disparou recentemente?",
+                "opcoes": ["Uso em reatores de fusão", "É um componente essencial nas baterias de veículos elétricos", "Substituição do cimento na construção civil", "Uso em ecrãs de telemóvel"],
+                "resposta": "É um componente essencial nas baterias de veículos elétricos"
+            }
+        ],
+        "Platinum": [
+            {
+                "pergunta": "1. Qual é a principal utilização da Platina na indústria automóvel (especialmente a combustão)?",
+                "opcoes": ["Jantes de liga leve", "Conversores catalíticos (Catalisadores)", "Baterias de chumbo", "Velas de ignição"],
+                "resposta": "Conversores catalíticos (Catalisadores)"
+            },
+            {
+                "pergunta": "2. Qual é a região/país que abriga o Complexo de Bushveld, de onde vem a vasta maioria da Platina mundial?",
+                "opcoes": ["Austrália", "Rússia", "África do Sul", "Brasil"],
+                "resposta": "África do Sul"
+            },
+            {
+                "pergunta": "3. Em química e medicina, a Platina é conhecida por...",
+                "opcoes": ["Ser um excelente catalisador e não reagir facilmente", "Evaporar rapidamente", "Criar campos magnéticos fortes", "Ser muito radioativa"],
+                "resposta": "Ser um excelente catalisador e não reagir facilmente"
+            }
+        ],
+        "Rare Earth Elements": [
+            {
+                "pergunta": "1. Apesar do nome 'Terras Raras', qual é a verdade sobre a sua abundância na crosta terrestre?",
+                "opcoes": ["Não existem, são criadas em laboratório", "São mais raras que o ouro e o ródio juntos", "São relativamente abundantes, mas raramente se encontram concentradas o suficiente para mineração rentável", "Só existem no fundo do oceano"],
+                "resposta": "São relativamente abundantes, mas raramente se encontram concentradas o suficiente para mineração rentável"
+            },
+            {
+                "pergunta": "2. Qual destas aplicações é crucial para as 'Terras Raras' (ex: Neodímio)?",
+                "opcoes": ["Fazer aço cirúrgico", "Produção de Ímanes Permanentes para turbinas eólicas e carros elétricos", "Tratamento de água do mar", "Alimentação de reatores nucleares"],
+                "resposta": "Produção de Ímanes Permanentes para turbinas eólicas e carros elétricos"
+            },
+            {
+                "pergunta": "3. Qual é o país que, historicamente, dominou a cadeia de fornecimento de Terras Raras nas últimas décadas?",
+                "opcoes": ["Estados Unidos", "China", "Noruega", "Japão"],
+                "resposta": "China"
+            }
+        ],
+        "Silver": [
+            {
+                "pergunta": "1. Qual é a propriedade física suprema da Prata, superando todos os outros metais?",
+                "opcoes": ["Maior dureza", "Maior densidade", "Maior condutividade elétrica e térmica", "Maior ponto de fusão"],
+                "resposta": "Maior condutividade elétrica e térmica"
+            },
+            {
+                "pergunta": "2. Além da joalharia e das moedas, qual é um uso industrial massivo da Prata hoje em dia?",
+                "opcoes": ["Painéis solares (Células fotovoltaicas)", "Produção de asfalto", "Fuselagem de satélites", "Lâmpadas fluorescentes"],
+                "resposta": "Painéis solares (Células fotovoltaicas)"
+            },
+            {
+                "pergunta": "3. A grande maioria da Prata minerada não vem de minas puras de prata, mas sim como subproduto de...",
+                "opcoes": ["Minas de carvão", "Extração de Chumbo, Zinco, Cobre e Ouro", "Minas de sal e calcário", "Extração de petróleo"],
+                "resposta": "Extração de Chumbo, Zinco, Cobre e Ouro"
+            }
         ]
     }
-
     # 3. Escolher o quiz certo com base no mineral escolhido
     quiz_atual = None
     for key in questions_db.keys():
