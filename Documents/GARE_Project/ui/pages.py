@@ -99,7 +99,14 @@ def render_map(mineral_name, occurrences):
         st.dataframe(occurrences)
         
 
-# 2. Base de dados de perguntas (3 por mineral/recurso)
+def render_quiz(data):
+    # 1. Descobrir qual é o mineral selecionado
+    mineral_name = st.session_state.get('selected_mineral', 'Desconhecido')
+    
+    st.title(f"🧠 Quiz de Conhecimentos: {mineral_name}")
+    st.markdown(f"Teste o que aprendeu ao explorar os dados sobre **{mineral_name}**!")
+
+    # 2. Base de dados de perguntas (3 por mineral/recurso)
     questions_db = {
         "Hydrogen": [
             {
@@ -289,6 +296,7 @@ def render_map(mineral_name, occurrences):
             }
         ]
     }
+
     # 3. Escolher o quiz certo com base no mineral escolhido
     quiz_atual = None
     for key in questions_db.keys():
@@ -298,11 +306,11 @@ def render_map(mineral_name, occurrences):
             
     # Se escolhermos um mineral que ainda não tem perguntas
     if not quiz_atual:
-        st.info(f"🚧 O quiz para **{mineral_name}** ainda está em construção! Tenta selecionar Lithium ou Hydrogen na Home.")
+        st.info(f"🚧 O quiz para **{mineral_name}** ainda não está disponível! Tenta outro recurso.")
         return
 
-    # Criamos um "prefixo" para as chaves ser ÚNICAS para cada mineral (isto resolve o erro DuplicateWidgetID)
-    prefix = mineral_name.replace(" ", "_")
+    # Criamos um "prefixo" para as chaves serem ÚNICAS para cada mineral
+    prefix = mineral_name.replace(" ", "_").replace("(", "").replace(")", "")
     estado_quiz = f'quiz_subm_{prefix}'
     estado_pontuacao = f'pontos_{prefix}'
 
@@ -335,7 +343,7 @@ def render_map(mineral_name, occurrences):
                 st.session_state[estado_quiz] = True
                 st.rerun()
 
-    # 6. Avaliação Final (de 0 a 3 valores)
+    # 6. Avaliação Final
     else:
         total_perguntas = 3
         score = st.session_state[estado_pontuacao]
