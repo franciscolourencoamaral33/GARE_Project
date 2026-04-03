@@ -74,16 +74,12 @@ def build_folium_map(occurrences):
 
     fmap = folium.Map(location=[avg_lat, avg_lon], zoom_start=4, tiles="CartoDB positron")
 
-    # Lógica para categorização
+    # Lógica ORIGINAL DO TEU COLEGA: Agrupar apenas por Dataset
     def get_category(row):
-        country = str(row.get("Country", "")).strip()
-        deposit = str(row.get("Deposit Type / Trap Type", "")).strip()
-        
-        if country and country.lower() not in ('nan', 'none'):
-            return country
-        elif deposit and deposit.lower() not in ('nan', 'none'):
-            return deposit
-        return "Outros / Desconhecido"
+        dataset = str(row.get("Dataset", "")).strip()
+        if dataset and dataset.lower() not in ('nan', 'none'):
+            return dataset
+        return "Desconhecido"
 
     categories = sorted({get_category(p["data"]) for p in valid_points})
     color_map = {cat: PALETTE[index % len(PALETTE)] for index, cat in enumerate(categories)}
@@ -115,10 +111,9 @@ def build_folium_map(occurrences):
             popup=folium.Popup(build_popup(row), max_width=420),
         ).add_to(clusters[cat])
 
-    # === O TRUQUE: DESENHAR A LEGENDA NATIVAMENTE NO STREAMLIT ===
+    # === DESENHAR A LEGENDA NATIVAMENTE NO STREAMLIT ===
     if categories:
-        st.markdown("**Legenda das Categorias no Mapa:**")
-        # Divide a legenda em 3 colunas para não ocupar muito espaço vertical
+        st.markdown("**Legenda (Dataset):**")
         cols = st.columns(3) 
         for i, cat in enumerate(categories):
             color = color_map[cat]
@@ -129,7 +124,7 @@ def build_folium_map(occurrences):
                 "</div>",
                 unsafe_allow_html=True
             )
-        st.markdown("<br>", unsafe_allow_html=True) # Dá um pequeno espaço antes do mapa renderizar
+        st.markdown("<br>", unsafe_allow_html=True)
     # ==============================================================
 
     folium.LayerControl(collapsed=False).add_to(fmap)
