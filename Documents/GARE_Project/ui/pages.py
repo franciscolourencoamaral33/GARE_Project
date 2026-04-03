@@ -5,23 +5,28 @@ from streamlit_folium import st_folium
 
 def render_home():
     from core.data import get_mineral_names
-    st.title("Geology Explorer")
-    st.write("Select a resource to explore its properties:")
-    
+    import streamlit as st
+
+    st.title("Material ID - Geology Explorer")
+    st.write("Select a mineral resource to explore its properties, geological setting, and location.")
+
+    # 1. Vai buscar os nomes reais do teu ficheiro CSV
     names = get_mineral_names()
-    
-    # Criar colunas para os botões
+
+    if not names:
+        st.warning("No minerals found in the database. Check your CSV file.")
+        return
+
+    # 2. Cria os botões dinamicamente
     cols = st.columns(3)
     for i, name in enumerate(names):
         with cols[i % 3]:
-            if st.button(name, key=name, use_container_width=True):
-                # 1. Guarda o mineral selecionado
+            # Se o botão for clicado:
+            if st.button(name, key=f"btn_{name}", use_container_width=True):
                 st.session_state['selected_mineral'] = name
-                # 2. Muda a página no menu da sidebar (força a mudança de aba)
-                # Nota: O nome da chave aqui deve ser igual ao índice do menu no app.py
-                st.session_state['menu_option'] = "physical" 
+                st.session_state['menu_option'] = "physical" # Faz o salto de página
                 st.rerun()
-
+                
 def render_physical(mineral_name: str):
     mineral = get_mineral(mineral_name)
     if not mineral:
