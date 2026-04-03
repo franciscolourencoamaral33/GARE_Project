@@ -32,7 +32,7 @@ def main():
     if menu == "home":
         # BUSCAMOS OS NOMES PARA OS BOTÕES APARECEREM
         names = get_mineral_names() 
-        render_home(names) # Passamos a lista de nomes aqui
+        render_home() # Passamos a lista de nomes aqui
     
     elif menu == "physical":
         data = get_mineral(mineral_name) if mineral_name else None
