@@ -15,16 +15,7 @@ def render_home():
 
     # --- 2. TÍTULO E INTRODUÇÃO ---
     st.title("Material ID - Geology Explorer")
-    st.markdown("""
-        Esta aplicação permite explorar e visualizar dados sobre os minerais vitais para a transição energética global.
-        
-        **Como usar:**
-        1. Usa os botões abaixo ou a barra lateral para escolher um recurso.
-        2. Navega pelas abas na barra lateral para ver Propriedades Físicas, Mapas e Geologia.
-        3. Testa os teus conhecimentos no Quiz!
-        
-        ---
-    """)
+    st.markdown("This application allows you to explore and visualize data about vital minerals for the global energy transition.")
     
     st.subheader("Select a mineral resource to explore:")
 
