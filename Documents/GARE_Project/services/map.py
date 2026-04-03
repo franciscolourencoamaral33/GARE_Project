@@ -3,6 +3,7 @@ from folium.plugins import MarkerCluster
 import pandas as pd
 import html
 import math
+import streamlit as st
 
 # 1. As cores do teu colega
 PALETTE = [
@@ -10,7 +11,7 @@ PALETTE = [
     "#9467bd", "#8c564b", "#17becf",
 ]
 
-# 2. Todos os fatores/detalhes que vão aparecer ao clicar
+# 2. Todos os fatores/detalhes
 POPUP_FIELDS = [
     "Dataset", "Resource", "Name", "Country", "Geological Setting",
     "Host Rock / Reservoir", "Deposit Type / Trap Type",
@@ -19,7 +20,7 @@ POPUP_FIELDS = [
 ]
 
 def build_popup(row):
-    """Constrói a tabela de detalhes com todos os fatores."""
+    """Constrói a tabela de detalhes."""
     lines = []
     for field in POPUP_FIELDS:
         value = str(row.get(field, "")).strip()
@@ -38,28 +39,6 @@ def build_popup(row):
         "<table style='border-collapse:collapse'>"
         + "".join(lines)
         + "</table></div>"
-    )
-
-def build_legend(categories, color_map):
-    """Constrói a legenda flutuante no canto inferior do mapa."""
-    items = []
-    for cat in categories:
-        color = color_map[cat]
-        items.append(
-            "<div style='display:flex; align-items:center; margin-bottom:4px;'>"
-            f"<span style='display:inline-block; width:12px; height:12px; background:{color}; border-radius:50%; margin-right:8px;'></span>"
-            f"<span>{html.escape(cat)}</span>"
-            "</div>"
-        )
-
-    return (
-        "<div style='position: fixed; bottom: 20px; left: 20px; z-index: 9999; "
-        "background: white; padding: 12px 14px; border: 2px solid grey; "
-        "border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); "
-        "font-family: Arial, sans-serif; font-size: 13px; max-height: 250px; overflow-y: auto;'>"
-        "<div style='font-weight:700; margin-bottom:8px;'>Legenda</div>"
-        + "".join(items)
-        + "</div>"
     )
 
 def build_folium_map(occurrences):
@@ -95,7 +74,7 @@ def build_folium_map(occurrences):
 
     fmap = folium.Map(location=[avg_lat, avg_lon], zoom_start=4, tiles="CartoDB positron")
 
-    # Lógica Inteligente para Cores: Tenta 'Country', se não houver, tenta 'Deposit Type'
+    # Lógica para categorização
     def get_category(row):
         country = str(row.get("Country", "")).strip()
         deposit = str(row.get("Deposit Type / Trap Type", "")).strip()
@@ -106,7 +85,6 @@ def build_folium_map(occurrences):
             return deposit
         return "Outros / Desconhecido"
 
-    # Criar categorias e atribuir cores
     categories = sorted({get_category(p["data"]) for p in valid_points})
     color_map = {cat: PALETTE[index % len(PALETTE)] for index, cat in enumerate(categories)}
     clusters = {}
@@ -115,7 +93,6 @@ def build_folium_map(occurrences):
         group = folium.FeatureGroup(name=cat, show=True).add_to(fmap)
         clusters[cat] = MarkerCluster(name=f"{cat}").add_to(group)
 
-    # Desenhar os pontos
     for p in valid_points:
         row = p["data"]
         cat = get_category(row)
@@ -138,10 +115,22 @@ def build_folium_map(occurrences):
             popup=folium.Popup(build_popup(row), max_width=420),
         ).add_to(clusters[cat])
 
-    # Injetar a legenda de forma segura para o Streamlit
+    # === O TRUQUE: DESENHAR A LEGENDA NATIVAMENTE NO STREAMLIT ===
     if categories:
-        legend_html = build_legend(categories, color_map)
-        fmap.get_root().html.add_child(folium.Element(legend_html))
+        st.markdown("**Legenda das Categorias no Mapa:**")
+        # Divide a legenda em 3 colunas para não ocupar muito espaço vertical
+        cols = st.columns(3) 
+        for i, cat in enumerate(categories):
+            color = color_map[cat]
+            cols[i % 3].markdown(
+                f"<div style='display:flex; align-items:center; margin-bottom:4px;'>"
+                f"<span style='display:inline-block; width:14px; height:14px; background:{color}; border-radius:50%; margin-right:8px; border:1px solid #aaa;'></span>"
+                f"<span style='font-size: 14px;'>{html.escape(cat)}</span>"
+                "</div>",
+                unsafe_allow_html=True
+            )
+        st.markdown("<br>", unsafe_allow_html=True) # Dá um pequeno espaço antes do mapa renderizar
+    # ==============================================================
 
     folium.LayerControl(collapsed=False).add_to(fmap)
     
