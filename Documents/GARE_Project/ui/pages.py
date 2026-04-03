@@ -99,30 +99,33 @@ def render_map(mineral_name, occurrences):
         st.dataframe(occurrences)
         
 
-def render_quiz():
-    st.title("🧠 Quiz de Conhecimentos Geológicos")
-    st.markdown("Teste o que aprendeu ao explorar os mapas sobre o **Lítio** e o **Hidrogénio**!")
+def render_quiz(data):
+    # 1. Descobrir qual é o mineral selecionado
+    mineral_name = st.session_state.get('selected_mineral', 'Desconhecido')
+    
+    st.title(f"🧠 Quiz de Conhecimentos: {mineral_name}")
+    st.markdown(f"Teste o que aprendeu ao explorar os dados sobre **{mineral_name}**!")
 
-    # 1. As Perguntas
-    questions = {
-        "Lítio": [
+    # 2. Base de dados de perguntas (3 por mineral)
+    questions_db = {
+        "Lithium": [ # Substitui pela forma como está escrito no teu CSV (ex: "Lítio" se for em PT)
             {
-                "pergunta": "1. Qual é a principal aplicação do Lítio hoje em dia?",
+                "pergunta": "1. Qual é a principal aplicação deste recurso hoje em dia?",
                 "opcoes": ["Construção Civil", "Baterias de iões de lítio", "Joalharia", "Combustível para aviões"],
                 "resposta": "Baterias de iões de lítio"
             },
             {
-                "pergunta": "2. Em Portugal, o Lítio é encontrado frequentemente associado a que tipo de rocha?",
+                "pergunta": "2. Em Portugal, este recurso é frequentemente encontrado associado a que tipo de rocha?",
                 "opcoes": ["Calcário", "Basalto", "Pegmatitos", "Areia da praia"],
                 "resposta": "Pegmatitos"
             },
             {
-                "pergunta": "3. Qual destas características torna o Lítio num elemento único?",
+                "pergunta": "3. Qual destas características torna este elemento único?",
                 "opcoes": ["É o metal mais leve que existe", "É magnético", "É líquido à temperatura ambiente", "Brilha no escuro"],
                 "resposta": "É o metal mais leve que existe"
             }
         ],
-        "Hidrogénio": [
+        "Hydrogen": [ # Substitui pela forma como está escrito no teu CSV (ex: "Hidrogénio" se for em PT)
             {
                 "pergunta": "1. Como é frequentemente conhecido o hidrogénio gerado naturalmente na crosta terrestre?",
                 "opcoes": ["Hidrogénio Verde", "Hidrogénio Branco (Geológico)", "Hidrogénio Cinzento", "Hidrogénio Azul"],
@@ -134,70 +137,78 @@ def render_quiz():
                 "resposta": "Quando 'queimado', só liberta vapor de água"
             },
             {
-                "pergunta": "3. O Hidrogénio natural fica muitas vezes acumulado no subsolo em...",
-                "opcoes": ["Lagos subterrâneos de água doce", "Bolsas e armadilhas geológicas (rochas porosas/falhas)", "Minas de carvão abandonadas", "Magma vulcânico"],
-                "resposta": "Bolsas e armadilhas geológicas (rochas porosas/falhas)"
+                "pergunta": "3. Onde fica muitas vezes acumulado no subsolo?",
+                "opcoes": ["Lagos subterrâneos de água doce", "Bolsas e armadilhas geológicas", "Minas de carvão abandonadas", "Magma vulcânico"],
+                "resposta": "Bolsas e armadilhas geológicas"
             }
         ]
     }
 
-    # 2. Inicializar a memória do Streamlit
-    if 'quiz_submetido' not in st.session_state:
-        st.session_state.quiz_submetido = False
-    if 'pontuacao' not in st.session_state:
-        st.session_state.pontuacao = 0
+    # 3. Escolher o quiz certo com base no mineral escolhido
+    quiz_atual = None
+    for key in questions_db.keys():
+        if key.lower() in mineral_name.lower() or mineral_name.lower() in key.lower():
+            quiz_atual = questions_db[key]
+            break
+            
+    # Se escolhermos um mineral que ainda não tem perguntas
+    if not quiz_atual:
+        st.info(f"🚧 O quiz para **{mineral_name}** ainda está em construção! Tenta selecionar Lithium ou Hydrogen na Home.")
+        return
 
-    # 3. Mostrar formulário
-    if not st.session_state.quiz_submetido:
-        with st.form("meu_formulario_quiz_definitivo"):
+    # Criamos um "prefixo" para as chaves ser ÚNICAS para cada mineral (isto resolve o erro DuplicateWidgetID)
+    prefix = mineral_name.replace(" ", "_")
+    estado_quiz = f'quiz_subm_{prefix}'
+    estado_pontuacao = f'pontos_{prefix}'
+
+    # 4. Inicializar a memória do Streamlit
+    if estado_quiz not in st.session_state:
+        st.session_state[estado_quiz] = False
+    if estado_pontuacao not in st.session_state:
+        st.session_state[estado_pontuacao] = 0
+
+    # 5. Mostrar formulário de 3 perguntas
+    if not st.session_state[estado_quiz]:
+        with st.form(f"form_quiz_{prefix}"):
             respostas_utilizador = {}
             
-            st.subheader("⛏️ Secção 1: Lítio")
-            for i, q in enumerate(questions["Lítio"]):
-                chave_li = f"SUPER_UNIQUE_LITIO_Q_{i}"
-                respostas_utilizador[chave_li] = st.radio(q["pergunta"], q["opcoes"], key=chave_li)
-                st.write("---")
-
-            st.subheader("💧 Secção 2: Hidrogénio")
-            for i, q in enumerate(questions["Hidrogénio"]):
-                chave_h = f"SUPER_UNIQUE_HIDRO_Q_{i}"
-                respostas_utilizador[chave_h] = st.radio(q["pergunta"], q["opcoes"], key=chave_h)
+            for i, q in enumerate(quiz_atual):
+                chave_unica = f"pergunta_{prefix}_{i}"
+                respostas_utilizador[chave_unica] = st.radio(q["pergunta"], q["opcoes"], key=chave_unica)
                 st.write("---")
 
             submit_button = st.form_submit_button("Submeter e Ver Resultados!")
 
             if submit_button:
                 score = 0
-                for i, q in enumerate(questions["Lítio"]):
-                    if respostas_utilizador[f"SUPER_UNIQUE_LITIO_Q_{i}"] == q["resposta"]:
-                        score += 1
-                for i, q in enumerate(questions["Hidrogénio"]):
-                    if respostas_utilizador[f"SUPER_UNIQUE_HIDRO_Q_{i}"] == q["resposta"]:
+                for i, q in enumerate(quiz_atual):
+                    chave_unica = f"pergunta_{prefix}_{i}"
+                    if respostas_utilizador[chave_unica] == q["resposta"]:
                         score += 1
                 
-                st.session_state.pontuacao = score
-                st.session_state.quiz_submetido = True
+                st.session_state[estado_pontuacao] = score
+                st.session_state[estado_quiz] = True
                 st.rerun()
 
-    # 4. Mostrar Resultados
+    # 6. Avaliação Final (de 0 a 3 valores)
     else:
-        total_perguntas = 6
-        score = st.session_state.pontuacao
+        total_perguntas = 3
+        score = st.session_state[estado_pontuacao]
         
         st.header("🏆 Resultados do Quiz")
-        st.write(f"### Acertaste em **{score}** de **{total_perguntas}** perguntas!")
+        st.write(f"### Acertaste em **{score}** de **{total_perguntas}** perguntas sobre {mineral_name}!")
         
-        if score == 6:
+        if score == 3:
             st.success("Perfeito! Foste um autêntico geólogo de elite! Prestaste muita atenção aos dados. Parabéns! 🎉")
             st.balloons()
-        elif score >= 4:
-            st.info("Muito bem! Tens bons conhecimentos, mas ainda deixaste escapar um ou outro detalhe. Bom trabalho! 👍")
-        elif score >= 2:
-            st.warning("Razoável... Parece que passaste os olhos pela informação muito rápido. Que tal dares mais uma vista de olhos na app? 📖")
+        elif score == 2:
+            st.info("Muito bem! Tens bons conhecimentos, mas ainda deixaste escapar um detalhe. Bom trabalho! 👍")
+        elif score == 1:
+            st.warning("Razoável... Passaste os olhos pela informação muito rápido. Que tal dares mais uma vista de olhos na app? 📖")
         else:
             st.error("Ops! Claramente vieste só pelo passeio. Volta aos mapas e à informação antes de tentares outra vez! 😅")
         
-        if st.button("Tentar Novamente", key="SUPER_UNIQUE_BOTAO_RECOMECAR"):
-            st.session_state.quiz_submetido = False
-            st.session_state.pontuacao = 0
+        if st.button("Tentar Novamente", key=f"btn_reset_{prefix}"):
+            st.session_state[estado_quiz] = False
+            st.session_state[estado_pontuacao] = 0
             st.rerun()
