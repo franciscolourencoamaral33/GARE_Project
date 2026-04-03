@@ -71,17 +71,32 @@ def render_geological(data):
     with col2:
         st.write(f"**Temperature:** {data.get('Temperature', 'N/A')}")
 
-def render_map(mineral_name: str):
-    st.title(f"Mapa de Ocorrências: {mineral_name}")
+def render_map(mineral_name, occurrences):
+    import streamlit as st
     
-    occurrences = get_top_occurrences(mineral_name)
+    st.title("Geographical Distribution")
+    st.subheader(f"Occurrences of {mineral_name}")
     
-    # Criar o mapa usando a tua função de service
-    map_obj = build_folium_map(occurrences)
-    st_folium(map_obj, height=500, width=800)
-    
-    st.write(f"Encontradas {len(occurrences)} ocorrências no dataset.")
+    # 1. Verifica se recebemos dados válidos
+    if occurrences is None or len(occurrences) == 0:
+        st.warning("No location data/coordinates available for this resource.")
+        return
 
+    # 2. Tenta desenhar o mapa
+    try:
+        from services.map import build_folium_map
+        from streamlit_folium import st_folium
+        
+        map_obj = build_folium_map(occurrences)
+        if map_obj:
+            st_folium(map_obj, width=800, height=500)
+        else:
+            st.warning("Map could not be generated.")
+            
+    except Exception as e:
+        # Se houver algum erro com o Folium, mostra os dados em tabela para não crashar a app
+        st.error(f"Error loading the map module. Showing raw data instead.")
+        st.dataframe(occurrences)
 def render_quiz(mineral_name: str):
     st.title(f"Quiz Geológico: {mineral_name if mineral_name else 'Geral'}")
     st.write("Testa os teus conhecimentos sobre este recurso!")
