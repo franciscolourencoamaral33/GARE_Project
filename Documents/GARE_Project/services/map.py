@@ -59,14 +59,14 @@ def build_legend(categories, color_map):
         "background: white; padding: 12px 14px; border: 1px solid #ccc; "
         "border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); "
         "font-family: Arial, sans-serif; font-size: 13px;'>"
-        "<div style='font-weight:700; margin-bottom:8px;'>Legenda (País)</div>"
+        "<div style='font-weight:700; margin-bottom:8px;'>Legenda (Dataset)</div>"
         + "".join(items)
         + "</div>"
     )
 
 def build_folium_map(occurrences):
     """Função principal que desenha o mapa a partir dos dados do Streamlit."""
-    # 1. Tratar os dados que vêm do Pandas, trocando NaNs por strings vazias
+    # 1. Tratar os dados que vêm do Pandas
     if isinstance(occurrences, pd.DataFrame):
         occurrences = occurrences.fillna("")
         data_points = occurrences.to_dict('records')
@@ -80,14 +80,12 @@ def build_folium_map(occurrences):
         lon_raw = str(point.get("Longitude", "")).replace(",", ".")
         
         try:
-            # Se a string estiver vazia ou for literalmente "none"/"nan", salta
             if not lat_raw or not lon_raw or lat_raw.lower() in ('nan', 'none') or lon_raw.lower() in ('nan', 'none'):
                 continue
                 
             lat = float(lat_raw)
             lon = float(lon_raw)
             
-            # Verificação matemática extra contra erros invisíveis
             if math.isnan(lat) or math.isnan(lon):
                 continue
                 
@@ -95,30 +93,27 @@ def build_folium_map(occurrences):
         except (ValueError, TypeError):
             continue
 
-    # 3. Fallback se nenhum ponto tiver coordenadas
     if not valid_points:
         return folium.Map(location=[39.5, 15.0], zoom_start=4, tiles="CartoDB positron")
 
-    # 4. Centralizar o mapa
     avg_lat = sum(p["lat"] for p in valid_points) / len(valid_points)
     avg_lon = sum(p["lon"] for p in valid_points) / len(valid_points)
 
     fmap = folium.Map(location=[avg_lat, avg_lon], zoom_start=4, tiles="CartoDB positron")
 
-    # 5. Criar Categorias por País (como sugeriste) e as respetivas cores
-    categories = sorted({str(p["data"].get("Country", "Desconhecido")).strip() or "Desconhecido" for p in valid_points})
+    # 5. Criar Categorias por DATASET (igual ao teu colega)
+    categories = sorted({str(p["data"].get("Dataset", "Desconhecido")).strip() or "Desconhecido" for p in valid_points})
     color_map = {cat: PALETTE[index % len(PALETTE)] for index, cat in enumerate(categories)}
     clusters = {}
 
-    # 6. Adicionar os Layers (Grupos) por país ao mapa
     for cat in categories:
         group = folium.FeatureGroup(name=cat, show=True).add_to(fmap)
         clusters[cat] = MarkerCluster(name=f"{cat} cluster").add_to(group)
 
-    # 7. Adicionar cada marcador com o PopUp
     for p in valid_points:
         row = p["data"]
-        cat = str(row.get("Country", "Desconhecido")).strip() or "Desconhecido"
+        # Vai buscar o Dataset para saber a cor
+        cat = str(row.get("Dataset", "Desconhecido")).strip() or "Desconhecido"
         name = str(row.get("Name", "Sem nome")).strip()
         resource = str(row.get("Resource", "Sem recurso")).strip()
 
@@ -138,12 +133,10 @@ def build_folium_map(occurrences):
             popup=folium.Popup(build_popup(row), max_width=420),
         ).add_to(clusters[cat])
 
-    # 8. Renderizar a Legenda
     if categories:
         legend_html = build_legend(categories, color_map)
         fmap.get_root().html.add_child(folium.Element(legend_html))
 
-    # Controlos de Layer (para poder ligar/desligar países)
     folium.LayerControl(collapsed=False).add_to(fmap)
     
     return fmap
