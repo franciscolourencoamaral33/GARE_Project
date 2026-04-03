@@ -1,5 +1,5 @@
 import streamlit as st
-from core.data import mineral_exists
+from core.data import get_mineral, get_mineral_names, load_data, mineral_exists, get_top_occurrences
 from ui.pages import render_home, render_physical, render_geological, render_map, render_quiz
 
 def main():
