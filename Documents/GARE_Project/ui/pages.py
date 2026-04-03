@@ -4,19 +4,23 @@ from services.map import build_folium_map
 from streamlit_folium import st_folium
 
 def render_home():
-    st.title("Material ID")
-    st.markdown("Bem-vindo ao explorador de recursos geológicos.")
-    st.markdown("---")
-    st.subheader("Seleção Rápida (Base de Dados CSV)")
+    from core.data import get_mineral_names
+    st.title("Geology Explorer")
+    st.write("Select a resource to explore its properties:")
     
     names = get_mineral_names()
+    
+    # Criar colunas para os botões
     cols = st.columns(3)
-    for i, mineral in enumerate(names):
-        # Cria botões dinamicamente com base no CSV
-        if cols[i % 3].button(mineral, key=f"btn_{mineral}"):
-            st.session_state.selected_mineral = mineral
-            st.session_state.page = "physical"
-            st.rerun()
+    for i, name in enumerate(names):
+        with cols[i % 3]:
+            if st.button(name, key=name, use_container_width=True):
+                # 1. Guarda o mineral selecionado
+                st.session_state['selected_mineral'] = name
+                # 2. Muda a página no menu da sidebar (força a mudança de aba)
+                # Nota: O nome da chave aqui deve ser igual ao índice do menu no app.py
+                st.session_state['menu_option'] = "physical" 
+                st.rerun()
 
 def render_physical(mineral_name: str):
     mineral = get_mineral(mineral_name)
