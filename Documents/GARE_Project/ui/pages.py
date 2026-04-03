@@ -97,13 +97,12 @@ def render_map(mineral_name, occurrences):
         # Se houver algum erro com o Folium, mostra os dados em tabela para não crashar a app
         st.error(f"Error loading the map module. Showing raw data instead.")
         st.dataframe(occurrences)
-import streamlit as st
-
+        
 def render_quiz():
     st.title("🧠 Quiz de Conhecimentos Geológicos")
     st.markdown("Teste o que aprendeu ao explorar os mapas sobre o **Lítio** e o **Hidrogénio**!")
 
-    # 1. As Perguntas (3 de Lítio, 3 de Hidrogénio)
+    # 1. As Perguntas
     questions = {
         "Lítio": [
             {
@@ -141,46 +140,45 @@ def render_quiz():
         ]
     }
 
-    # 2. Inicializar a memória do Streamlit para o Quiz
+    # 2. Inicializar a memória do Streamlit
     if 'quiz_submetido' not in st.session_state:
         st.session_state.quiz_submetido = False
     if 'pontuacao' not in st.session_state:
         st.session_state.pontuacao = 0
 
-    # 3. Lógica: Se o quiz ainda NÃO foi submetido, mostramos o formulário
+    # 3. Mostrar formulário
     if not st.session_state.quiz_submetido:
-        with st.form("quiz_form"):
+        with st.form("quiz_form_oficial"):
             respostas_utilizador = {}
             
             st.subheader("⛏️ Secção 1: Lítio")
             for i, q in enumerate(questions["Lítio"]):
-                respostas_utilizador[f"Li_{i}"] = st.radio(q["pergunta"], q["opcoes"], key=f"Li_{i}")
+                chave_unica_li = f"pergunta_litio_exclusiva_{i}"
+                respostas_utilizador[chave_unica_li] = st.radio(q["pergunta"], q["opcoes"], key=chave_unica_li)
                 st.write("---")
 
             st.subheader("💧 Secção 2: Hidrogénio")
             for i, q in enumerate(questions["Hidrogénio"]):
-                respostas_utilizador[f"H_{i}"] = st.radio(q["pergunta"], q["opcoes"], key=f"H_{i}")
+                chave_unica_h = f"pergunta_hidro_exclusiva_{i}"
+                respostas_utilizador[chave_unica_h] = st.radio(q["pergunta"], q["opcoes"], key=chave_unica_h)
                 st.write("---")
 
-            # Botão mágico
             submit_button = st.form_submit_button("Submeter e Ver Resultados!")
 
             if submit_button:
-                # Calcular pontuação
                 score = 0
                 for i, q in enumerate(questions["Lítio"]):
-                    if respostas_utilizador[f"Li_{i}"] == q["resposta"]:
+                    if respostas_utilizador[f"pergunta_litio_exclusiva_{i}"] == q["resposta"]:
                         score += 1
                 for i, q in enumerate(questions["Hidrogénio"]):
-                    if respostas_utilizador[f"H_{i}"] == q["resposta"]:
+                    if respostas_utilizador[f"pergunta_hidro_exclusiva_{i}"] == q["resposta"]:
                         score += 1
                 
-                # Guardar na memória e recarregar a página
                 st.session_state.pontuacao = score
                 st.session_state.quiz_submetido = True
                 st.rerun()
 
-    # 4. Lógica: Se o quiz JÁ foi submetido, mostramos a avaliação final
+    # 4. Mostrar Resultados
     else:
         total_perguntas = 6
         score = st.session_state.pontuacao
@@ -188,10 +186,9 @@ def render_quiz():
         st.header("🏆 Resultados do Quiz")
         st.write(f"### Acertaste em **{score}** de **{total_perguntas}** perguntas!")
         
-        # A avaliação personalizada
         if score == 6:
             st.success("Perfeito! Foste um autêntico geólogo de elite! Prestaste muita atenção aos dados. Parabéns! 🎉")
-            st.balloons() # Lança balões no ecrã!
+            st.balloons()
         elif score >= 4:
             st.info("Muito bem! Tens bons conhecimentos, mas ainda deixaste escapar um ou outro detalhe. Bom trabalho! 👍")
         elif score >= 2:
@@ -199,8 +196,7 @@ def render_quiz():
         else:
             st.error("Ops! Claramente vieste só pelo passeio. Volta aos mapas e à informação antes de tentares outra vez! 😅")
         
-        # Botão para recomeçar
-        if st.button("Tentar Novamente"):
+        if st.button("Tentar Novamente", key="botao_recomecar_exclusivo"):
             st.session_state.quiz_submetido = False
             st.session_state.pontuacao = 0
-            st.rerun()    
+            st.rerun()
