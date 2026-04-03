@@ -12,28 +12,41 @@ def main():
     if 'selected_mineral' not in st.session_state:
         st.session_state['selected_mineral'] = None
 
-    # 2. SIDEBAR (Agora controlada automaticamente pelo Streamlit)
+    # 2. SIDEBAR
     st.sidebar.title("Navigation")
     
     search_query = st.sidebar.text_input("Search mineral", placeholder="e.g. Orthoclase")
     if search_query:
-        if mineral_exists(search_query):
-            st.session_state['selected_mineral'] = search_query
-            st.session_state['menu_option'] = "physical"
+        # Se a pessoa pesquisar, guarda e vai para as propriedades
+        st.session_state['selected_mineral'] = search_query.capitalize()
+        st.session_state['menu_option'] = "physical"
 
-    # O TRUQUE MÁGICO: Usar 'key' sincroniza o rádio com o st.session_state automaticamente!
-    st.sidebar.radio(
+    options = ["home", "physical", "geological", "map", "quiz"]
+    
+    # Descobre qual é a página que devia estar selecionada
+    try:
+        current_index = options.index(st.session_state['menu_option'])
+    except ValueError:
+        current_index = 0
+
+    # O MENU: Sem o parâmetro "key" que causou o erro! Usamos apenas o index.
+    menu = st.sidebar.radio(
         "Go to",
-        ["home", "physical", "geological", "map", "quiz"],
-        key="menu_option" 
+        options,
+        index=current_index
     )
+
+    # Se o utilizador clicou no menu lateral com o rato, atualiza a app
+    if menu != st.session_state['menu_option']:
+        st.session_state['menu_option'] = menu
+        st.rerun()
 
     if st.sidebar.button("Clear selection"):
         st.session_state['selected_mineral'] = None
         st.session_state['menu_option'] = "home"
         st.rerun()
 
-    # 3. RENDERIZAÇÃO SEGURA (Bloqueia os erros que tiveste)
+    # 3. RENDERIZAÇÃO DAS PÁGINAS COM SEGURANÇA
     mineral_name = st.session_state['selected_mineral']
 
     if st.session_state['menu_option'] == "home":
@@ -41,14 +54,14 @@ def main():
         
     elif st.session_state['menu_option'] == "physical":
         data = get_mineral(mineral_name) if mineral_name else None
-        if data:
+        if data is not None:
             render_physical(data)
         else:
             st.warning("👈 Por favor, seleciona um mineral na Home primeiro para ver as propriedades.")
             
     elif st.session_state['menu_option'] == "geological":
         data = get_mineral(mineral_name) if mineral_name else None
-        if data:
+        if data is not None:
             render_geological(data)
         else:
             st.warning("👈 Por favor, seleciona um mineral na Home primeiro.")
@@ -62,7 +75,7 @@ def main():
             
     elif st.session_state['menu_option'] == "quiz":
         data = get_mineral(mineral_name) if mineral_name else None
-        if data:
+        if data is not None:
             render_quiz(data)
         else:
             st.warning("👈 Por favor, seleciona um mineral na Home primeiro para iniciar o Quiz.")
