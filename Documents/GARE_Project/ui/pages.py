@@ -44,14 +44,14 @@ def render_home():
                 st.session_state['menu_option'] = "physical"
                 st.rerun()
                 
+
 def render_physical(data):
-    # 1. Vai buscar o nome usando a coluna exata que tens: 'resource'
-    # Usamos .get() para que não dê erro se a coluna estiver vazia
-    recurso_nome = data.get('resource', 'Unknown Resource')
+    # 1. Vai buscar o nome garantindo que funciona com maiúscula ou minúscula
+    recurso_nome = data.get('Resource', data.get('resource', 'Unknown Resource'))
     
     st.title(f"Details for {recurso_nome}")
     
-    # 2. Truque da imagem (tira espaços e parênteses)
+    # 2. Truque da imagem (tira espaços e parênteses para bater certo com o nome do ficheiro)
     mineral_filename = recurso_nome.lower().replace(" ", "").replace("(", "").replace(")", "").replace("-", "")
     
     col_img, col_data = st.columns([1, 2])
@@ -69,17 +69,19 @@ def render_physical(data):
 
     with col_data:
         # 3. Mostrar os dados que REALMENTE existem no teu ficheiro CSV
-        st.markdown(f"**Specific Deposit/Name:** {data.get('name', 'N/A')}")
+        nome_especifico = data.get('Name', data.get('name', 'N/A'))
+        st.markdown(f"**Specific Deposit/Name:** {nome_especifico}")
         st.write("---")
         
+        # Tabela com as informações do CSV
         st.write(f"""
         | Characteristic | Information |
         | :--- | :--- |
-        | **Country** | {data.get('country', 'N/A')} |
-        | **Geological Setting** | {data.get('geological setting', 'N/A')} |
-        | **Host Rock** | {data.get('host rock', 'N/A')} |
-        | **Deposit Type** | {data.get('deposit type', 'N/A')} |
-        | **Status** | {data.get('status', 'N/A')} |
+        | **Country** | {data.get('Country', data.get('country', 'N/A'))} |
+        | **Geological Setting** | {data.get('Geological Setting', data.get('geological setting', 'N/A'))} |
+        | **Host Rock** | {data.get('Host Rock', data.get('host rock', 'N/A'))} |
+        | **Deposit Type** | {data.get('Deposit Type', data.get('deposit type', 'N/A'))} |
+        | **Status** | {data.get('Status', data.get('status', 'N/A'))} |
         """)
 
 def render_geological(data):
