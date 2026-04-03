@@ -2,42 +2,34 @@ import pandas as pd
 import streamlit as st
 import os
 
-@st.cache_data(ttl=1)
+@st.cache_data
 def load_data():
     base_path = os.path.dirname(__file__)
-    csv_path = os.path.join(base_path, "..", "geology_dataset_standard.csv")
+    # AQUI ESTÁ A CORREÇÃO DO NOME:
+    csv_path = os.path.join(base_path, "..", "geo_dataset5_merged.csv")
     
     try:
-        # Definimos exatamente as colunas que queremos ler para evitar o erro de 'fields expected'
-        cols_to_use = [
-            'Dataset', 'Resource', 'Name', 'Country', 'Latitude', 'Longitude', 
-            'Geological Setting', 'Host Rock / Reservoir', 'Deposit Type / Trap Type', 
-            'Grade / Concentration', 'Size / Reserves', 'Depth', 'Temperature', 
-            'Status', 'Notes', 'Source'
-        ]
-        
-        # Leitura forçada com delimitador vírgula e ignorando erros de linha
+        # sep=None e engine='python' resolvem o erro de "Expected 1 fields, saw 16"
         df = pd.read_csv(
             csv_path, 
-            usecols=cols_to_use,
+            sep=None, 
+            engine='python', 
             encoding='utf-8-sig',
-            on_bad_lines='skip',
-            sep=','
+            quotechar='"'
         )
         
-        # Limpeza de espaços
         df.columns = df.columns.str.strip()
         df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
         
+        if 'Latitude' in df.columns:
+            df['Latitude'] = pd.to_numeric(df['Latitude'], errors='coerce')
+        if 'Longitude' in df.columns:
+            df['Longitude'] = pd.to_numeric(df['Longitude'], errors='coerce')
+            
         return df
     except Exception as e:
-        # Se falhar com vírgula, tenta com ponto e vírgula
-        try:
-            df = pd.read_csv(csv_path, sep=';', encoding='utf-8-sig', on_bad_lines='skip')
-            return df
-        except:
-            st.error(f"Erro na leitura do CSV: {e}")
-            return pd.DataFrame()
+        st.error(f"Erro ao ler o CSV: {e}")
+        return pd.DataFrame()
 
 def get_mineral_names():
     df = load_data()
