@@ -98,6 +98,7 @@ def render_map(mineral_name, occurrences):
         st.error(f"Error loading the map module. Showing raw data instead.")
         st.dataframe(occurrences)
         
+
 def render_quiz():
     st.title("🧠 Quiz de Conhecimentos Geológicos")
     st.markdown("Teste o que aprendeu ao explorar os mapas sobre o **Lítio** e o **Hidrogénio**!")
@@ -148,19 +149,19 @@ def render_quiz():
 
     # 3. Mostrar formulário
     if not st.session_state.quiz_submetido:
-        with st.form("quiz_form_oficial"):
+        with st.form("meu_formulario_quiz_definitivo"):
             respostas_utilizador = {}
             
             st.subheader("⛏️ Secção 1: Lítio")
             for i, q in enumerate(questions["Lítio"]):
-                chave_unica_li = f"pergunta_litio_exclusiva_{i}"
-                respostas_utilizador[chave_unica_li] = st.radio(q["pergunta"], q["opcoes"], key=chave_unica_li)
+                chave_li = f"SUPER_UNIQUE_LITIO_Q_{i}"
+                respostas_utilizador[chave_li] = st.radio(q["pergunta"], q["opcoes"], key=chave_li)
                 st.write("---")
 
             st.subheader("💧 Secção 2: Hidrogénio")
             for i, q in enumerate(questions["Hidrogénio"]):
-                chave_unica_h = f"pergunta_hidro_exclusiva_{i}"
-                respostas_utilizador[chave_unica_h] = st.radio(q["pergunta"], q["opcoes"], key=chave_unica_h)
+                chave_h = f"SUPER_UNIQUE_HIDRO_Q_{i}"
+                respostas_utilizador[chave_h] = st.radio(q["pergunta"], q["opcoes"], key=chave_h)
                 st.write("---")
 
             submit_button = st.form_submit_button("Submeter e Ver Resultados!")
@@ -168,10 +169,10 @@ def render_quiz():
             if submit_button:
                 score = 0
                 for i, q in enumerate(questions["Lítio"]):
-                    if respostas_utilizador[f"pergunta_litio_exclusiva_{i}"] == q["resposta"]:
+                    if respostas_utilizador[f"SUPER_UNIQUE_LITIO_Q_{i}"] == q["resposta"]:
                         score += 1
                 for i, q in enumerate(questions["Hidrogénio"]):
-                    if respostas_utilizador[f"pergunta_hidro_exclusiva_{i}"] == q["resposta"]:
+                    if respostas_utilizador[f"SUPER_UNIQUE_HIDRO_Q_{i}"] == q["resposta"]:
                         score += 1
                 
                 st.session_state.pontuacao = score
@@ -196,7 +197,7 @@ def render_quiz():
         else:
             st.error("Ops! Claramente vieste só pelo passeio. Volta aos mapas e à informação antes de tentares outra vez! 😅")
         
-        if st.button("Tentar Novamente", key="botao_recomecar_exclusivo"):
+        if st.button("Tentar Novamente", key="SUPER_UNIQUE_BOTAO_RECOMECAR"):
             st.session_state.quiz_submetido = False
             st.session_state.pontuacao = 0
             st.rerun()
