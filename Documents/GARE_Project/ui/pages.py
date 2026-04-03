@@ -27,43 +27,49 @@ def render_home():
                 st.session_state['menu_option'] = "physical" # Faz o salto de página
                 st.rerun()
                 
-def render_physical(mineral_name: str):
-    mineral = get_mineral(mineral_name)
-    if not mineral:
-        st.warning("Selecione um mineral na Home.")
+def render_physical(data):
+    import streamlit as st
+    st.title("Physical & General Properties")
+    
+    if not data:
+        st.warning("No data available for this mineral.")
         return
 
-    st.title(f"{mineral_name} — Propriedades e Localização")
+    # Usamos data.get('NomeDaColuna', 'Texto alternativo se não existir')
+    st.subheader(f"Resource: {data.get('Resource', 'Unknown')}")
     
-    # Usando as colunas reais do teu CSV
     col1, col2 = st.columns(2)
     with col1:
-        st.info(f"**Dataset:** {mineral.get('Dataset', 'N/A')}")
-        st.write(f"**País de Exemplo:** {mineral.get('Country', 'N/A')}")
-    with col2:
-        st.write(f"**Teor / Concentração:** {mineral.get('Grade / Concentration', 'N/A')}")
-        st.write(f"**Status:** {mineral.get('Status', 'N/A')}")
-
-    st.markdown("---")
-    if st.button("Próximo: Contexto Geológico"):
-        st.session_state.page = "geological"
-        st.rerun()
-
-def render_geological(mineral_name: str):
-    mineral = get_mineral(mineral_name)
-    if not mineral: return
-
-    st.title(f"{mineral_name} — Contexto Geológico")
+        st.write(f"**Specific Name/Location:** {data.get('Name', 'N/A')}")
+        st.write(f"**Country:** {data.get('Country', 'N/A')}")
+        st.write(f"**Status:** {data.get('Status', 'N/A')}")
     
-    st.success(f"**Geological Setting:** {mineral.get('Geological Setting', 'N/A')}")
-    st.write(f"**Host Rock / Reservoir:** {mineral.get('Host Rock / Reservoir', 'N/A')}")
-    st.write(f"**Tipo de Depósito:** {mineral.get('Deposit Type / Trap Type', 'N/A')}")
-    st.write(f"**Notas:** {mineral.get('Notes', 'N/A')}")
+    with col2:
+        st.write(f"**Grade / Concentration:** {data.get('Grade / Concentration', 'N/A')}")
+        st.write(f"**Size / Reserves:** {data.get('Size / Reserves', 'N/A')}")
+        
+    st.write("---")
+    st.write(f"**Notes:** {data.get('Notes', 'N/A')}")
+    st.write(f"**Source:** {data.get('Source', 'N/A')}")
 
-    st.markdown("---")
-    if st.button("Próximo: Ver no Mapa"):
-        st.session_state.page = "map"
-        st.rerun()
+
+def render_geological(data):
+    import streamlit as st
+    st.title("Geological Setting")
+    
+    if not data:
+        st.warning("No data available for this mineral.")
+        return
+
+    st.write(f"**Geological Setting:** {data.get('Geological Setting', 'N/A')}")
+    st.write(f"**Host Rock / Reservoir:** {data.get('Host Rock / Reservoir', 'N/A')}")
+    st.write(f"**Deposit Type / Trap Type:** {data.get('Deposit Type / Trap Type', 'N/A')}")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write(f"**Depth:** {data.get('Depth', 'N/A')}")
+    with col2:
+        st.write(f"**Temperature:** {data.get('Temperature', 'N/A')}")
 
 def render_map(mineral_name: str):
     st.title(f"Mapa de Ocorrências: {mineral_name}")
