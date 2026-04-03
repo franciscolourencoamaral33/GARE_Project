@@ -99,32 +99,8 @@ def render_map(mineral_name, occurrences):
         st.dataframe(occurrences)
         
 
-def render_quiz(data):
-    # 1. Descobrir qual é o mineral selecionado
-    mineral_name = st.session_state.get('selected_mineral', 'Desconhecido')
-    
-    st.title(f"🧠 Quiz de Conhecimentos: {mineral_name}")
-    st.markdown(f"Teste o que aprendeu ao explorar os dados sobre **{mineral_name}**!")
-
-   # 2. Base de dados de perguntas (3 por recurso)
+# 2. Base de dados de perguntas (3 por mineral/recurso)
     questions_db = {
-        "Lithium": [
-            {
-                "pergunta": "1. Qual é a principal aplicação deste recurso hoje em dia?",
-                "opcoes": ["Construção Civil", "Baterias de iões de lítio", "Joalharia", "Combustível para aviões"],
-                "resposta": "Baterias de iões de lítio"
-            },
-            {
-                "pergunta": "2. Em Portugal, este recurso é frequentemente encontrado associado a que tipo de rocha?",
-                "opcoes": ["Calcário", "Basalto", "Pegmatitos", "Areia da praia"],
-                "resposta": "Pegmatitos"
-            },
-            {
-                "pergunta": "3. Qual destas características torna este elemento único?",
-                "opcoes": ["É o metal mais leve que existe", "É magnético", "É líquido à temperatura ambiente", "Brilha no escuro"],
-                "resposta": "É o metal mais leve que existe"
-            }
-        ],
         "Hydrogen": [
             {
                 "pergunta": "1. Como é frequentemente conhecido o hidrogénio gerado naturalmente na crosta terrestre?",
@@ -142,123 +118,174 @@ def render_quiz(data):
                 "resposta": "Bolsas e armadilhas geológicas"
             }
         ],
-        "Cobalt": [
+        "Lithium": [
             {
-                "pergunta": "1. Qual é a principal função do Cobalto nas tecnologias modernas?",
-                "opcoes": ["Fazer vidro à prova de bala", "Estabilizar baterias recarregáveis", "Construir painéis solares", "Filtrar água potável"],
-                "resposta": "Estabilizar baterias recarregáveis"
+                "pergunta": "1. Qual é a principal aplicação deste recurso hoje em dia?",
+                "opcoes": ["Construção Civil", "Baterias de iões de lítio", "Joalharia", "Combustível para aviões"],
+                "resposta": "Baterias de iões de lítio"
             },
             {
-                "pergunta": "2. Qual é o país responsável pela maior parte da extração mundial de Cobalto?",
-                "opcoes": ["Austrália", "Canadá", "República Democrática do Congo", "Rússia"],
-                "resposta": "República Democrática do Congo"
+                "pergunta": "2. Em que tipo de formação geológica é frequentemente extraído (ex: em Portugal ou Austrália)?",
+                "opcoes": ["Pegmatitos", "Basalto", "Calcário", "Areia da praia"],
+                "resposta": "Pegmatitos"
             },
             {
-                "pergunta": "3. Na mineração, o Cobalto é maioritariamente extraído como um subproduto de quais minérios?",
-                "opcoes": ["Cobre e Níquel", "Ouro e Prata", "Ferro e Carvão", "Urânio e Chumbo"],
-                "resposta": "Cobre e Níquel"
+                "pergunta": "3. Qual destas características torna o Lítio único?",
+                "opcoes": ["É magnético", "Brilha no escuro", "É o metal mais leve que existe", "É líquido à temperatura ambiente"],
+                "resposta": "É o metal mais leve que existe"
             }
         ],
-        "Copper": [
+        "Methane Hydrate": [
             {
-                "pergunta": "1. Qual é a principal propriedade física que torna o Cobre vital para a eletrificação?",
-                "opcoes": ["É transparente", "É um excelente condutor de eletricidade e calor", "É mais duro que o diamante", "É altamente radioativo"],
-                "resposta": "É um excelente condutor de eletricidade e calor"
+                "pergunta": "1. O que são os Hidratos de Metano (Methane Hydrates)?",
+                "opcoes": ["Rochas vulcânicas ricas em gás", "Gelo inflamável que retém gás metano na sua estrutura", "Lagos subterrâneos de metano líquido", "Fósseis de dinossauros"],
+                "resposta": "Gelo inflamável que retém gás metano na sua estrutura"
             },
             {
-                "pergunta": "2. Que cor adquire o cobre quando fica exposto aos elementos e oxida ao longo do tempo?",
-                "opcoes": ["Preto", "Branco brilhante", "Verde (Verdete)", "Vermelho vivo"],
-                "resposta": "Verde (Verdete)"
+                "pergunta": "2. Onde se encontram tipicamente estas acumulações?",
+                "opcoes": ["Nos desertos", "No topo de montanhas", "No fundo dos oceanos e no permafrost", "Em minas de sal"],
+                "resposta": "No fundo dos oceanos e no permafrost"
             },
             {
-                "pergunta": "3. Qual é o tipo de depósito geológico que fornece a maior parte do cobre a nível mundial?",
-                "opcoes": ["Pórfiro cuprífero (Porphyry)", "Placers de rio", "Veios de quartzo puro", "Rochas calcárias"],
-                "resposta": "Pórfiro cuprífero (Porphyry)"
+                "pergunta": "3. Porque são considerados uma faca de dois gumes para o ambiente?",
+                "opcoes": ["São altamente radioativos", "Consomem todo o oxigénio da água", "Podem libertar grandes quantidades de um potente gás de efeito estufa se derreterem", "Destroem a camada de ozono diretamente"],
+                "resposta": "Podem libertar grandes quantidades de um potente gás de efeito estufa se derreterem"
             }
         ],
-        "Iridium": [
+        "Monazite": [
             {
-                "pergunta": "1. O Irídio é famoso na geologia por estar concentrado numa camada de argila associada a que evento histórico?",
-                "opcoes": ["A extinção dos dinossauros (limite K-Pg)", "A Idade do Gelo", "A formação do Oceano Atlântico", "A erupção do Monte Vesúvio"],
-                "resposta": "A extinção dos dinossauros (limite K-Pg)"
+                "pergunta": "1. A Monazite é um mineral crucial para a extração de que grupo de elementos?",
+                "opcoes": ["Ouro e Prata", "Terras Raras (REE) e Tório", "Ferro e Níquel", "Diamantes industriais"],
+                "resposta": "Terras Raras (REE) e Tório"
             },
             {
-                "pergunta": "2. O Irídio faz parte de que grupo restrito de metais na tabela periódica?",
-                "opcoes": ["Metais Alcalinos", "Grupo da Platina (PGE)", "Terras Raras", "Halogéneos"],
-                "resposta": "Grupo da Platina (PGE)"
+                "pergunta": "2. Como é que a Monazite é frequentemente encontrada e extraída comercialmente?",
+                "opcoes": ["Em areias pesadas costeiras (placers)", "Em minas profundas de carvão", "No núcleo de vulcões ativos", "Flutuando no oceano"],
+                "resposta": "Em areias pesadas costeiras (placers)"
             },
             {
-                "pergunta": "3. Qual é uma das suas características físicas mais notáveis?",
-                "opcoes": ["Flutua na água", "É extremamente tóxico", "É um dos metais mais densos e resistentes à corrosão do mundo", "Derrete com o calor das mãos"],
-                "resposta": "É um dos metais mais densos e resistentes à corrosão do mundo"
+                "pergunta": "3. Devido à presença de urânio e tório, que cuidado especial exige este mineral?",
+                "opcoes": ["Tem de ser guardado no escuro", "É frequentemente radioativo", "Muda de cor com a humidade", "Derrete ao sol"],
+                "resposta": "É frequentemente radioativo"
             }
         ],
-        "Nickel": [
+        "Orthoclase (K-feldspar)": [
             {
-                "pergunta": "1. Qual tem sido, historicamente, a principal aplicação industrial do Níquel?",
-                "opcoes": ["Ligas de Aço Inoxidável", "Produção de explosivos", "Fertilizantes agrícolas", "Vidro colorido"],
-                "resposta": "Ligas de Aço Inoxidável"
+                "pergunta": "1. A Ortoclase é um mineral padrão na Escala de Mohs. Qual é a sua dureza?",
+                "opcoes": ["1 (Muito mole)", "6", "10 (Dureza do diamante)", "8"],
+                "resposta": "6"
             },
             {
-                "pergunta": "2. O Níquel é frequentemente encontrado em grande abundância em que tipo de objetos extraterrestres?",
-                "opcoes": ["Cometas de gelo", "Meteoritos metálicos (Ferro-Níquel)", "Poeira lunar", "Anéis de Saturno"],
-                "resposta": "Meteoritos metálicos (Ferro-Níquel)"
+                "pergunta": "2. É um mineral muito abundante. Em que tipo de rocha é um constituinte principal?",
+                "opcoes": ["Granito", "Arenito", "Carvão", "Sal-gema"],
+                "resposta": "Granito"
             },
             {
-                "pergunta": "3. Porque é que a procura de Níquel disparou recentemente?",
-                "opcoes": ["Uso em reatores de fusão", "É um componente essencial nas baterias de veículos elétricos", "Substituição do cimento na construção civil", "Uso em ecrãs de telemóvel"],
-                "resposta": "É um componente essencial nas baterias de veículos elétricos"
+                "pergunta": "3. Qual é a principal aplicação industrial deste feldspato?",
+                "opcoes": ["Combustível", "Alimentação animal", "Produção de vidro e cerâmica", "Construção de microchips"],
+                "resposta": "Produção de vidro e cerâmica"
             }
         ],
-        "Platinum": [
+        "Petroleum": [
             {
-                "pergunta": "1. Qual é a principal utilização da Platina na indústria automóvel (especialmente a combustão)?",
-                "opcoes": ["Jantes de liga leve", "Conversores catalíticos (Catalisadores)", "Baterias de chumbo", "Velas de ignição"],
-                "resposta": "Conversores catalíticos (Catalisadores)"
+                "pergunta": "1. Como se formou a grande maioria do Petróleo que extraímos hoje?",
+                "opcoes": ["A partir de dinossauros decompostos", "A partir de plâncton e algas marinhas pré-históricas sob calor e pressão", "A partir do magma terrestre", "Foi trazido por meteoritos"],
+                "resposta": "A partir de plâncton e algas marinhas pré-históricas sob calor e pressão"
             },
             {
-                "pergunta": "2. Qual é a região/país que abriga o Complexo de Bushveld, de onde vem a vasta maioria da Platina mundial?",
-                "opcoes": ["Austrália", "Rússia", "África do Sul", "Brasil"],
-                "resposta": "África do Sul"
+                "pergunta": "2. Qual é o principal tipo de rocha que serve de 'reservatório' para o petróleo?",
+                "opcoes": ["Rochas sedimentares porosas (ex: arenitos e calcários)", "Granito maciço", "Mármore", "Obsidiana"],
+                "resposta": "Rochas sedimentares porosas (ex: arenitos e calcários)"
             },
             {
-                "pergunta": "3. Em química e medicina, a Platina é conhecida por...",
-                "opcoes": ["Ser um excelente catalisador e não reagir facilmente", "Evaporar rapidamente", "Criar campos magnéticos fortes", "Ser muito radioativa"],
-                "resposta": "Ser um excelente catalisador e não reagir facilmente"
+                "pergunta": "3. Quimicamente, o petróleo é essencialmente uma mistura complexa de...",
+                "opcoes": ["Hidratos de carbono", "Hidrocarbonetos", "Ácidos sulfúricos", "Gases nobres"],
+                "resposta": "Hidrocarbonetos"
             }
         ],
-        "Rare Earth Elements": [
+        "Quartz": [
             {
-                "pergunta": "1. Apesar do nome 'Terras Raras', qual é a verdade sobre a sua abundância na crosta terrestre?",
-                "opcoes": ["Não existem, são criadas em laboratório", "São mais raras que o ouro e o ródio juntos", "São relativamente abundantes, mas raramente se encontram concentradas o suficiente para mineração rentável", "Só existem no fundo do oceano"],
-                "resposta": "São relativamente abundantes, mas raramente se encontram concentradas o suficiente para mineração rentável"
+                "pergunta": "1. Qual é a composição química simples do Quartzo?",
+                "opcoes": ["Dióxido de Carbono (CO2)", "Dióxido de Silício (SiO2)", "Cloreto de Sódio (NaCl)", "Óxido de Ferro (Fe2O3)"],
+                "resposta": "Dióxido de Silício (SiO2)"
             },
             {
-                "pergunta": "2. Qual destas aplicações é crucial para as 'Terras Raras' (ex: Neodímio)?",
-                "opcoes": ["Fazer aço cirúrgico", "Produção de Ímanes Permanentes para turbinas eólicas e carros elétricos", "Tratamento de água do mar", "Alimentação de reatores nucleares"],
-                "resposta": "Produção de Ímanes Permanentes para turbinas eólicas e carros elétricos"
+                "pergunta": "2. Qual propriedade especial do Quartzo o torna útil em relógios e eletrónica?",
+                "opcoes": ["Magnetismo", "Fluorescência", "Piezoeletricidade", "Condutividade térmica extrema"],
+                "resposta": "Piezoeletricidade"
             },
             {
-                "pergunta": "3. Qual é o país que, historicamente, dominou a cadeia de fornecimento de Terras Raras nas últimas décadas?",
-                "opcoes": ["Estados Unidos", "China", "Noruega", "Japão"],
-                "resposta": "China"
+                "pergunta": "3. Qual é a dureza do Quartzo na Escala de Mohs?",
+                "opcoes": ["5", "7", "9", "10"],
+                "resposta": "7"
             }
         ],
-        "Silver": [
+        "Quartz (HPQ)": [
             {
-                "pergunta": "1. Qual é a propriedade física suprema da Prata, superando todos os outros metais?",
-                "opcoes": ["Maior dureza", "Maior densidade", "Maior condutividade elétrica e térmica", "Maior ponto de fusão"],
-                "resposta": "Maior condutividade elétrica e térmica"
+                "pergunta": "1. O que significa a sigla HPQ associada a este quartzo?",
+                "opcoes": ["High Pressure Quartz", "High Purity Quartz (Quartzo de Alta Pureza)", "Heavy Particle Quartz", "Hydro-Powered Quartz"],
+                "resposta": "High Purity Quartz (Quartzo de Alta Pureza)"
             },
             {
-                "pergunta": "2. Além da joalharia e das moedas, qual é um uso industrial massivo da Prata hoje em dia?",
-                "opcoes": ["Painéis solares (Células fotovoltaicas)", "Produção de asfalto", "Fuselagem de satélites", "Lâmpadas fluorescentes"],
-                "resposta": "Painéis solares (Células fotovoltaicas)"
+                "pergunta": "2. Qual é a indústria moderna que depende criticamente do HPQ para os seus processos de fabrico?",
+                "opcoes": ["Joalharia barata", "Indústria de Cimento", "Semicondutores e painéis solares", "Indústria Têxtil"],
+                "resposta": "Semicondutores e painéis solares"
             },
             {
-                "pergunta": "3. A grande maioria da Prata minerada não vem de minas puras de prata, mas sim como subproduto de...",
-                "opcoes": ["Minas de carvão", "Extração de Chumbo, Zinco, Cobre e Ouro", "Minas de sal e calcário", "Extração de petróleo"],
-                "resposta": "Extração de Chumbo, Zinco, Cobre e Ouro"
+                "pergunta": "3. O que distingue o HPQ do quartzo comum encontrado em qualquer praia?",
+                "opcoes": ["A sua cor totalmente negra", "Níveis extremamente baixos de impurezas", "A capacidade de flutuar", "É feito em laboratório"],
+                "resposta": "Níveis extremamente baixos de impurezas"
+            }
+        ],
+        "Sulfates": [
+            {
+                "pergunta": "1. Qual é o mineral de sulfato mais comum e amplamente utilizado na construção (ex: pladur/gesso cartonado)?",
+                "opcoes": ["Pirite", "Gesso", "Bauxite", "Talco"],
+                "resposta": "Gesso"
+            },
+            {
+                "pergunta": "2. Em que tipo de ambiente geológico se formam muitos dos minerais de sulfato?",
+                "opcoes": ["No núcleo terrestre", "Em ambientes de intensa evaporação (bacias evaporíticas)", "Em vulcões subaquáticos", "Em grutas glaciares"],
+                "resposta": "Em ambientes de intensa evaporação (bacias evaporíticas)"
+            },
+            {
+                "pergunta": "3. Quimicamente, todos os sulfatos contêm qual destes aniões?",
+                "opcoes": ["Cloreto (Cl-)", "Carbonato (CO3 2-)", "Sulfato (SO4 2-)", "Nitrato (NO3-)"],
+                "resposta": "Sulfato (SO4 2-)"
+            }
+        ],
+        "Thorium": [
+            {
+                "pergunta": "1. Qual é o principal interesse do Tório para a tecnologia moderna?",
+                "opcoes": ["Fazer aço inoxidável", "Combustível alternativo e mais seguro para reatores nucleares", "Baterias de telemóvel", "Isolamento acústico"],
+                "resposta": "Combustível alternativo e mais seguro para reatores nucleares"
+            },
+            {
+                "pergunta": "2. Comparativamente ao Urânio, quão abundante é o Tório na crosta terrestre?",
+                "opcoes": ["É cerca de 3 a 4 vezes mais abundante", "São igualmente abundantes", "É muito mais raro", "Não existe naturalmente, só em meteoritos"],
+                "resposta": "É cerca de 3 a 4 vezes mais abundante"
+            },
+            {
+                "pergunta": "3. Em que mineral comum de areias pesadas se encontra muito do Tório mundial?",
+                "opcoes": ["Quartzo", "Magnetite", "Monazite", "Mica"],
+                "resposta": "Monazite"
+            }
+        ],
+        "Uranium": [
+            {
+                "pergunta": "1. Qual é o principal minério de onde se extrai o Urânio?",
+                "opcoes": ["Uraninite (Pechblenda)", "Galena", "Bauxite", "Cinábrio"],
+                "resposta": "Uraninite (Pechblenda)"
+            },
+            {
+                "pergunta": "2. Qual destes isótopos do Urânio é físsil e crucial para reatores nucleares de fissão?",
+                "opcoes": ["Urânio-238", "Urânio-235", "Urânio-234", "Urânio-239"],
+                "resposta": "Urânio-235"
+            },
+            {
+                "pergunta": "3. Qual é o aspeto clássico do mineral Uraninite no seu estado natural (antes de ser refinado)?",
+                "opcoes": ["Cristais verdes brilhantes", "Pedra preta ou acastanhada, densa e sem brilho metálico", "Pó amarelo brilhante ('yellowcake')", "Metal prateado e polido"],
+                "resposta": "Pedra preta ou acastanhada, densa e sem brilho metálico"
             }
         ]
     }
