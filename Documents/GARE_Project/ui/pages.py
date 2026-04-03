@@ -97,16 +97,110 @@ def render_map(mineral_name, occurrences):
         # Se houver algum erro com o Folium, mostra os dados em tabela para não crashar a app
         st.error(f"Error loading the map module. Showing raw data instead.")
         st.dataframe(occurrences)
-def render_quiz(mineral_name: str):
-    st.title(f"Quiz Geológico: {mineral_name if mineral_name else 'Geral'}")
-    st.write("Testa os teus conhecimentos sobre este recurso!")
-    
-    # Exemplo de uma pergunta simples
-    pergunta = f"O recurso {mineral_name} é considerado um recurso renovável?"
-    opcao = st.radio(pergunta, ["Sim", "Não", "Depende da exploração"])
-    
-    if st.button("Submeter Resposta"):
-        if opcao == "Não":
-            st.success("Correto! Recursos minerais e fósseis são não-renováveis à escala humana.")
+import streamlit as st
+
+def render_quiz():
+    st.title("🧠 Quiz de Conhecimentos Geológicos")
+    st.markdown("Teste o que aprendeu ao explorar os mapas sobre o **Lítio** e o **Hidrogénio**!")
+
+    # 1. As Perguntas (3 de Lítio, 3 de Hidrogénio)
+    questions = {
+        "Lítio": [
+            {
+                "pergunta": "1. Qual é a principal aplicação do Lítio hoje em dia?",
+                "opcoes": ["Construção Civil", "Baterias de iões de lítio", "Joalharia", "Combustível para aviões"],
+                "resposta": "Baterias de iões de lítio"
+            },
+            {
+                "pergunta": "2. Em Portugal, o Lítio é encontrado frequentemente associado a que tipo de rocha?",
+                "opcoes": ["Calcário", "Basalto", "Pegmatitos", "Areia da praia"],
+                "resposta": "Pegmatitos"
+            },
+            {
+                "pergunta": "3. Qual destas características torna o Lítio num elemento único?",
+                "opcoes": ["É o metal mais leve que existe", "É magnético", "É líquido à temperatura ambiente", "Brilha no escuro"],
+                "resposta": "É o metal mais leve que existe"
+            }
+        ],
+        "Hidrogénio": [
+            {
+                "pergunta": "1. Como é frequentemente conhecido o hidrogénio gerado naturalmente na crosta terrestre?",
+                "opcoes": ["Hidrogénio Verde", "Hidrogénio Branco (Geológico)", "Hidrogénio Cinzento", "Hidrogénio Azul"],
+                "resposta": "Hidrogénio Branco (Geológico)"
+            },
+            {
+                "pergunta": "2. O que torna o Hidrogénio tão interessante para o futuro da energia?",
+                "opcoes": ["Quando 'queimado', só liberta vapor de água", "É muito fácil e barato de extrair", "Substitui o urânio nas centrais nucleares", "Não precisa de ser armazenado"],
+                "resposta": "Quando 'queimado', só liberta vapor de água"
+            },
+            {
+                "pergunta": "3. O Hidrogénio natural fica muitas vezes acumulado no subsolo em...",
+                "opcoes": ["Lagos subterrâneos de água doce", "Bolsas e armadilhas geológicas (rochas porosas/falhas)", "Minas de carvão abandonadas", "Magma vulcânico"],
+                "resposta": "Bolsas e armadilhas geológicas (rochas porosas/falhas)"
+            }
+        ]
+    }
+
+    # 2. Inicializar a memória do Streamlit para o Quiz
+    if 'quiz_submetido' not in st.session_state:
+        st.session_state.quiz_submetido = False
+    if 'pontuacao' not in st.session_state:
+        st.session_state.pontuacao = 0
+
+    # 3. Lógica: Se o quiz ainda NÃO foi submetido, mostramos o formulário
+    if not st.session_state.quiz_submetido:
+        with st.form("quiz_form"):
+            respostas_utilizador = {}
+            
+            st.subheader("⛏️ Secção 1: Lítio")
+            for i, q in enumerate(questions["Lítio"]):
+                respostas_utilizador[f"Li_{i}"] = st.radio(q["pergunta"], q["opcoes"], key=f"Li_{i}")
+                st.write("---")
+
+            st.subheader("💧 Secção 2: Hidrogénio")
+            for i, q in enumerate(questions["Hidrogénio"]):
+                respostas_utilizador[f"H_{i}"] = st.radio(q["pergunta"], q["opcoes"], key=f"H_{i}")
+                st.write("---")
+
+            # Botão mágico
+            submit_button = st.form_submit_button("Submeter e Ver Resultados!")
+
+            if submit_button:
+                # Calcular pontuação
+                score = 0
+                for i, q in enumerate(questions["Lítio"]):
+                    if respostas_utilizador[f"Li_{i}"] == q["resposta"]:
+                        score += 1
+                for i, q in enumerate(questions["Hidrogénio"]):
+                    if respostas_utilizador[f"H_{i}"] == q["resposta"]:
+                        score += 1
+                
+                # Guardar na memória e recarregar a página
+                st.session_state.pontuacao = score
+                st.session_state.quiz_submetido = True
+                st.rerun()
+
+    # 4. Lógica: Se o quiz JÁ foi submetido, mostramos a avaliação final
+    else:
+        total_perguntas = 6
+        score = st.session_state.pontuacao
+        
+        st.header("🏆 Resultados do Quiz")
+        st.write(f"### Acertaste em **{score}** de **{total_perguntas}** perguntas!")
+        
+        # A avaliação personalizada
+        if score == 6:
+            st.success("Perfeito! Foste um autêntico geólogo de elite! Prestaste muita atenção aos dados. Parabéns! 🎉")
+            st.balloons() # Lança balões no ecrã!
+        elif score >= 4:
+            st.info("Muito bem! Tens bons conhecimentos, mas ainda deixaste escapar um ou outro detalhe. Bom trabalho! 👍")
+        elif score >= 2:
+            st.warning("Razoável... Parece que passaste os olhos pela informação muito rápido. Que tal dares mais uma vista de olhos na app? 📖")
         else:
-            st.error("Incorreto. Tenta rever a seção de Contexto Geológico.")    
+            st.error("Ops! Claramente vieste só pelo passeio. Volta aos mapas e à informação antes de tentares outra vez! 😅")
+        
+        # Botão para recomeçar
+        if st.button("Tentar Novamente"):
+            st.session_state.quiz_submetido = False
+            st.session_state.pontuacao = 0
+            st.rerun()    
