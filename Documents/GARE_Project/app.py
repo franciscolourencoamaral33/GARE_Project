@@ -30,16 +30,25 @@ def main():
     mineral_name = st.session_state['selected_mineral']
 
     if menu == "home":
-        render_home()
+        # BUSCAMOS OS NOMES PARA OS BOTÕES APARECEREM
+        names = get_mineral_names() 
+        render_home(names) # Passamos a lista de nomes aqui
+    
     elif menu == "physical":
         data = get_mineral(mineral_name) if mineral_name else None
         render_physical(data)
+        
     elif menu == "geological":
         data = get_mineral(mineral_name) if mineral_name else None
         render_geological(data)
+        
     elif menu == "map":
         occurrences = get_top_occurrences(mineral_name) if mineral_name else []
         render_map(mineral_name, occurrences)
+        
     elif menu == "quiz":
         data = get_mineral(mineral_name) if mineral_name else None
-        render_quiz(data) # Aqui usamos 'data' para evitar o NameError
+        render_quiz(data)
+
+if __name__ == "__main__":
+    main()
