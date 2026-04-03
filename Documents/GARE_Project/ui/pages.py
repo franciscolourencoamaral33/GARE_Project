@@ -57,16 +57,20 @@ def render_physical(data):
     col_img, col_data = st.columns([1, 2])
 
     with col_img:
-        image_path = f"images/{mineral_filename}.jpg"
+        # Tenta o caminho local (no teu Mac) e o caminho da Nuvem (Streamlit)
+        path_mac = f"images/{mineral_filename}.jpg"
+        path_nuvem = f"Documents/GARE_Project/images/{mineral_filename}.jpg"
+        
         try:
-            st.image(image_path, caption=recurso_nome, use_container_width=True)
+            # Tenta primeiro como se estivesse no teu PC
+            st.image(path_mac, caption=recurso_nome, use_container_width=True)
         except:
-            # Tenta carregar .jpeg caso a extensão seja essa
             try:
-                st.image(f"images/{mineral_filename}.jpeg", caption=recurso_nome, use_container_width=True)
+                # Se falhar, tenta o caminho completo da nuvem!
+                st.image(path_nuvem, caption=recurso_nome, use_container_width=True)
             except:
-                st.warning(f"📷 Imagem não encontrada. Esperava-se '{mineral_filename}.jpg' na pasta 'images/'.")
-
+                st.warning(f"📷 Imagem não encontrada. O site procurou na Nuvem por: '{path_nuvem}'.")
+                
     with col_data:
         # 3. Mostrar os dados que REALMENTE existem no teu ficheiro CSV
         nome_especifico = data.get('Name', data.get('name', 'N/A'))
