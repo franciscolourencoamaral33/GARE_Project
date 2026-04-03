@@ -45,22 +45,22 @@ def render_home():
                 st.rerun()
                 
 def render_physical(data):
-    st.title(f"Physical Properties of {data['Mineral Name']}")
+    st.title(f"Physical Properties of {data['Mineral']}")
     
     # === TRUQUE DA IMAGEM ===
     # Prepara o nome do ficheiro para bater certo com a pasta (tudo minusculo, sem espaços)
-    mineral_filename = data['Mineral Name'].lower().replace(" ", "").replace("(", "").replace(")", "").replace("-", "")
+    mineral_filename = data['Mineral'].lower().replace(" ", "").replace("(", "").replace(")", "").replace("-", "")
     
     col_img, col_data = st.columns([1, 2])
 
     with col_img:
         image_path = f"images/{mineral_filename}.jpg"
         try:
-            st.image(image_path, caption=data['Mineral Name'], use_container_width=True)
+            st.image(image_path, caption=data['Mineral'], use_container_width=True)
         except:
             # Tenta carregar .jpeg caso a extensão seja essa
             try:
-                st.image(f"images/{mineral_filename}.jpeg", caption=data['Mineral Name'], use_container_width=True)
+                st.image(f"images/{mineral_filename}.jpeg", caption=data['Mineral'], use_container_width=True)
             except:
                 st.warning(f"📷 Imagem não encontrada: espera-se o ficheiro '{mineral_filename}.jpg' na pasta 'images/'.")
 
